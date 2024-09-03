@@ -14,7 +14,7 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
 
     <!-- CSS for DataTables -->
-    <link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet">4
+    <link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet">
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
