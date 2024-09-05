@@ -52,7 +52,14 @@
                             <input type="time" name="end_time" id="end_time" class="form-control" required>
                         </div>
                     </div>
-
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <button type="button" id="check_availability" class="btn btn-info">ตรวจสอบว่างหรือไม่</button>
+                            <span id="availability_status" class="ms-3"></span> <!-- แสดงสถานะการจอง -->
+                        </div>
+                    </div>
+                    
                     <div class="mb-4">
                         <label for="purpose" class="form-label">จุดประสงค์ในการประชุม:</label>
                         <textarea name="purpose" id="purpose" class="form-control" rows="3" required></textarea>
@@ -73,16 +80,27 @@
                             @endforeach
                         </div>
                     </div>
-                    <div class="mb-4">
+
+                    <div class="mt-4 mb-4">
+                        <label for="participant_count" class="form-label">จำนวนผู้เข้าร่วมประชุม:</label>
+                        <input type="number" name="participant_count" id="participant_count" class="form-control"
+                            min="1" placeholder="กรอกจำนวนผู้เข้าร่วมประชุม">
+                    </div>
+
+                    <div class="mt-4" id="participant_fields">
+                        <!-- ช่องกรอกผู้เข้าร่วมประชุมจะถูกเพิ่มที่นี่ -->
+                    </div>
+
+                    <div class="mt-4 ">
                         <label class="form-label">ผู้เข้าร่วมประชุม:</label>
                         <table class="table table-borderd" id="table">
                             <tr>
-                                <th>Name</th>
-                                <th>Action</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                             <tr>
-                                <td><input type="text" name="participants[0][name]" placeholder="กรอกชื่อผู้เข้าร่วม"
-                                        class="form-control"></td>
+                                <td><input type="text" name="participants[0][name]"
+                                        placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control"></td>
                                 <td><button type="button" name="add" id="add" class="btn btn-success"> เพิ่ม
                                     </button></td>
                             </tr>
@@ -144,32 +162,116 @@
                 pageLength: 10,
                 responsive: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Thai.json'
+                    url: '//cdn.datatables.net/plug-ins/2.1.5/i18n/th.json'
+                },
+            });
+
+            $('#participant_count').on('change', function() {
+                var count = $(this).val();
+                $('#participant_fields').empty(); // ล้างข้อมูลเก่าออก
+                for (var i = 0; i < count; i++) {
+                    $('#participant_fields').append(`
+                        <div class="mb-3 row" id="row_${i}">
+                            <div class="col-md-10">
+                                <label for="participants[${i}][name]" class="form-label">ผู้เข้าร่วมประชุมคนที่ ${i + 1}</label>
+                                <input type="text" name="participants[${i}][name]" class="form-control" placeholder="กรอกชื่อ-นามสกุล">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger btn-sm remove-participant" data-row-id="row_${i}">ลบ</button>
+                            </div>
+                        </div>
+                    `);
                 }
+                updateParticipantCount(); // อัปเดตจำนวนผู้เข้าร่วม
+            });
+
+            // ฟังก์ชันลบผู้เข้าร่วมประชุม
+            $(document).on('click', '.remove-participant', function() {
+                var rowId = $(this).data('row-id');
+                $('#' + rowId).remove(); // ลบ row ที่ระบุ
+                updateParticipantCount(); // อัปเดตจำนวนผู้เข้าร่วม
+            });
+
+            // ฟังก์ชันอัปเดตจำนวนผู้เข้าร่วมประชุม
+            function updateParticipantCount() {
+                var rowCount = $('#participant_fields .row').length; // นับจำนวนแถวที่เหลือ
+                $('#participant_count').val(rowCount); // อัปเดตค่าของ input จำนวนผู้เข้าร่วมประชุม
+            }
+
+            // ฟังก์ชันเรียงลำดับใหม่และคงข้อมูลเดิมไว้
+            function reindexRows() {
+                $('#participant_fields .row').each(function(index) {
+                    // อัปเดต label
+                    $(this).find('label').text('ชื่อผู้เข้าร่วมประชุม ' + (index + 1) + ':');
+
+                    // อัปเดต name และ id ของ input fields
+                    $(this).find('input').attr('name', 'participants[' + index + '][name]');
+                    $(this).attr('id', 'row_' + index);
+                });
+            }
+
+            // เมื่อผู้ใช้กดปุ่ม "ตรวจสอบว่างหรือไม่"
+            $('#check_availability').on('click', function() {
+                var bookingStartDate = $('#booking_start_date').val();
+                var bookingEndDate = $('#booking_end_date').val();
+                var startTime = $('#start_time').val();
+                var endTime = $('#end_time').val();
+                var meetingRoomId = $('#meeting_room_id').val();
+
+                if (!bookingStartDate || !bookingEndDate || !startTime || !endTime || !meetingRoomId) {
+                    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                    return;
+                }
+
+                // ส่งข้อมูลไปตรวจสอบสถานะการจองด้วย AJAX
+                $.ajax({
+                    url: '{{ route("bookings.checkAvailability") }}', // เส้นทางสำหรับตรวจสอบสถานะ
+                    method: 'GET',
+                    data: {
+                        meeting_room_id: meetingRoomId,
+                        booking_start_date: bookingStartDate,
+                        booking_end_date: bookingEndDate,
+                        start_time: startTime,
+                        end_time: endTime,
+                    },
+                    success: function(response) {
+                        // ตรวจสอบสถานะการจองจาก response
+                        if (response.status === 'available') {
+                            $('#availability_status').text('ว่าง').css('color', 'green');
+                        } else {
+                            $('#availability_status').text('ไม่ว่าง').css('color', 'red');
+                        }
+                    },
+                    error: function() {
+                        $('#availability_status').text('เกิดข้อผิดพลาดในการตรวจสอบ').css('color', 'orange');
+                    }
+                });
             });
         });
-        $('#add').click(function() {
-            ++i;
-            $('#table').append(
-                `<tr>
-                    <td>
-                        <input type="text" name="participants[` + i + `][name]" placeholder="กรอกชื่อผู้เข้าร่วม" class="form-control">
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger remove-table-row">ลบ</button>
-                    </td>
+
+
+        // $('#add').click(function() {
+        //     ++i;
+        //     $('#table').append(
+        //         `<tr>
+        //             <td>
+        //                 <input type="text" name="participants[` + i + `][name]" placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control">
+        //             </td>
+        //             <td>
+        //                 <button type="button" class="btn btn-danger remove-table-row">ลบ</button>
+        //             </td>
                 
-                </tr>`);
+        //         </tr>`);
 
-        });
+        // });
 
-        $(document).on('click', '.remove-table-row', function() {
-            $(this).parents('tr').remove();
-        });
+        // $(document).on('click', '.remove-table-row', function() {
+        //     $(this).parents('tr').remove();
+        // });
 
-        function showAlert() {
-            alert("You clicked the button!");
-        }
+        // function showAlert() {
+        //     alert("You clicked the button!");
+        // }
     </script>
 @endpush
 

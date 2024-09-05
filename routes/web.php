@@ -35,4 +35,6 @@ Route::middleware(['auth'])->group(function () {
 
 //Meeting-room
 Route::resource('/meeting-rooms', MeetingRoomController::class);
+Route::get('/bookings/check-availability', [App\Http\Controllers\BookingController::class, 'checkAvailability'])->name('bookings.checkAvailability');
+
 //Route::get('/meeting-rooms/create', [MeetingRoomController::class,'create'])->name('meeting_room.create');

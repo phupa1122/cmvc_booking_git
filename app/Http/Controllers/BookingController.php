@@ -95,4 +95,28 @@ class BookingController extends Controller
 
         return redirect()->route('bookings.create')->with('success', 'การจองสำเร็จ');
     }
+
+    public function checkAvailability(Request $request)
+{
+    // ตรวจสอบการจองที่ซ้อนทับกันในช่วงวันที่และเวลาที่เลือก
+    $conflictingBookings = Booking::where('meeting_room_id', $request->meeting_room_id)
+        ->where(function ($query) use ($request) {
+            $query->where(function ($query) use ($request) {
+                $query->where('booking_start_date', '<=', $request->booking_end_date)
+                      ->where('booking_end_date', '>=', $request->booking_start_date);
+            })->where(function ($query) use ($request) {
+                $query->where('start_time', '<=', $request->end_time)
+                      ->where('end_time', '>=', $request->start_time);
+            });
+        })
+        ->where('status', 'pending') // ตรวจสอบเฉพาะสถานะ pending
+        ->exists();
+
+    // ส่งผลลัพธ์กลับไปยัง front-end
+    if ($conflictingBookings) {
+        return response()->json(['status' => 'unavailable']);
+    } else {
+        return response()->json(['status' => 'available']);
+    }
+}
 }
