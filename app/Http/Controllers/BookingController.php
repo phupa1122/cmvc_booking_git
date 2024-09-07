@@ -29,6 +29,7 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        //dd($request->all());
         $validatedData = $request->validate([
             'meeting_room_id' => 'required|exists:meeting_rooms,id',
             'booking_start_date' => 'required|date',
@@ -39,7 +40,7 @@ class BookingController extends Controller
             'equipments' => 'nullable|array',
             'equipments.*' => 'exists:equipment,id',
             'participants' => 'nullable|array',
-            'participants.*' => 'exists:users,id'
+            'participants.*.id' => 'exists:users,id'
         ]);
 
         if (strtotime($validatedData['booking_start_date']) > strtotime($validatedData['booking_end_date'])) {
@@ -85,9 +86,9 @@ class BookingController extends Controller
         }
 
         if (!empty($validatedData['participants'])) {
-            foreach ($validatedData['participants'] as $participantId) {
+            foreach ($validatedData['participants'] as $participant) {
                 $booking->participants()->create([
-                    'user_id' => $participantId,
+                    'user_id' => $participant['id'],
                     'status' => 'pending',
                 ]);
             }
@@ -109,7 +110,7 @@ class BookingController extends Controller
                       ->where('end_time', '>=', $request->start_time);
             });
         })
-        ->where('status', 'pending') // ตรวจสอบเฉพาะสถานะ pending
+        ->where('status', 'approved') // ตรวจสอบเฉพาะสถานะ pending
         ->exists();
 
     // ส่งผลลัพธ์กลับไปยัง front-end

@@ -52,14 +52,14 @@
                             <input type="time" name="end_time" id="end_time" class="form-control" required>
                         </div>
                     </div>
-                    
+
                     <div class="row mb-4">
                         <div class="col-md-12">
                             <button type="button" id="check_availability" class="btn btn-info">ตรวจสอบว่างหรือไม่</button>
                             <span id="availability_status" class="ms-3"></span> <!-- แสดงสถานะการจอง -->
                         </div>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label for="purpose" class="form-label">จุดประสงค์ในการประชุม:</label>
                         <textarea name="purpose" id="purpose" class="form-control" rows="3" required></textarea>
@@ -91,21 +91,7 @@
                         <!-- ช่องกรอกผู้เข้าร่วมประชุมจะถูกเพิ่มที่นี่ -->
                     </div>
 
-                    <div class="mt-4 ">
-                        <label class="form-label">ผู้เข้าร่วมประชุม:</label>
-                        <table class="table table-borderd" id="table">
-                            <tr>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <td><input type="text" name="participants[0][name]"
-                                        placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control"></td>
-                                <td><button type="button" name="add" id="add" class="btn btn-success"> เพิ่ม
-                                    </button></td>
-                            </tr>
-                        </table>
-                    </div>
+                    {{-- p2 --}}
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary btn-lg px-5">ยืนยันการจอง</button>
@@ -156,8 +142,9 @@
 @endsection
 @push('scripts')
     <script>
-        var i = 0;
+        
         $(document).ready(function() {
+            var i = 0;
             $('#bookingTable').DataTable({
                 pageLength: 10,
                 responsive: true,
@@ -166,24 +153,124 @@
                 },
             });
 
+            // ปิดการใช้งานฟิลด์ตั้งแต่เริ่มต้น
+            disableFormFields();
+
+            // ตรวจสอบความพร้อมของห้องประชุม
+            $('#check_availability').on('click', function() {
+                var bookingStartDate = $('#booking_start_date').val();
+                var bookingEndDate = $('#booking_end_date').val();
+                var startTime = $('#start_time').val();
+                var endTime = $('#end_time').val();
+                var meetingRoomId = $('#meeting_room_id').val();
+
+                if (!bookingStartDate || !bookingEndDate || !startTime || !endTime || !meetingRoomId) {
+                    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                    return;
+                }
+
+                // ส่งข้อมูลไปตรวจสอบสถานะการจองด้วย AJAX
+                $.ajax({
+                    url: '{{ route('bookings.checkAvailability') }}', // เส้นทางสำหรับตรวจสอบสถานะ
+                    method: 'GET',
+                    data: {
+                        meeting_room_id: meetingRoomId,
+                        booking_start_date: bookingStartDate,
+                        booking_end_date: bookingEndDate,
+                        start_time: startTime,
+                        end_time: endTime,
+                    },
+                    success: function(response) {
+                        // ตรวจสอบสถานะการจองจาก response
+                        if (response.status === 'available') {
+                            $('#availability_status').text('ว่าง').css('color', 'green');
+
+                            // เปิดใช้งานฟิลด์ที่ถูกปิดไว้
+                            enableFormFields();
+                        } else {
+                            $('#availability_status').text('ไม่ว่าง').css('color', 'red');
+
+                            // ปิดการใช้งานฟิลด์ต่างๆ ถ้าห้องไม่ว่าง
+                            disableFormFields();
+                        }
+                    },
+                    error: function() {
+                        $('#availability_status').text('เกิดข้อผิดพลาดในการตรวจสอบ').css('color', 'orange');
+                    }
+                });
+            });
+
+            // ปิดการใช้งานฟิลด์เมื่อมีการเปลี่ยนแปลงห้องประชุม, วันที่ หรือเวลา
+            $('#meeting_room_id, #booking_start_date, #booking_end_date, #start_time, #end_time').on('change', function() {
+                disableFormFields();
+                $('#availability_status').text(''); // ล้างสถานะการจอง
+            });
+
+             // ฟังก์ชันปิดการใช้งานฟิลด์
+             function disableFormFields() {
+                $('#purpose').prop('disabled', true);
+                $('input[name="equipments[]"]').prop('disabled', true);
+                $('#participant_count').prop('disabled', true);
+                $('#participant_fields').empty(); // ล้างช่องกรอกผู้เข้าร่วมประชุม
+            }
+
+            // ฟังก์ชันเปิดการใช้งานฟิลด์
+            function enableFormFields() {
+                $('#purpose').prop('disabled', false);
+                $('input[name="equipments[]"]').prop('disabled', false);
+                $('#participant_count').prop('disabled', false);
+            }
+
+            // เมื่อผู้ใช้กรอกจำนวนผู้เข้าร่วมประชุม
             $('#participant_count').on('change', function() {
                 var count = $(this).val();
                 $('#participant_fields').empty(); // ล้างข้อมูลเก่าออก
+                
                 for (var i = 0; i < count; i++) {
                     $('#participant_fields').append(`
                         <div class="mb-3 row" id="row_${i}">
                             <div class="col-md-10">
                                 <label for="participants[${i}][name]" class="form-label">ผู้เข้าร่วมประชุมคนที่ ${i + 1}</label>
-                                <input type="text" name="participants[${i}][name]" class="form-control" placeholder="กรอกชื่อ-นามสกุล">
-                            </div>
+                                <input type="text" name="participants[${i}][name]" class="form-control participant-name" placeholder="กรอกชื่อ-นามสกุล" id="participant_${i}">
+                                <input type="hidden" name="participants[${i}][id]" id="participant_id_${i}">
+                                </div>
                             <div class="col-md-2 d-flex align-items-end">
                                 <button type="button" class="btn btn-danger btn-sm remove-participant" data-row-id="row_${i}">ลบ</button>
                             </div>
                         </div>
                     `);
+
+                    // ใช้ AutoComplete สำหรับฟิลด์ที่เพิ่มใหม่
+                    attachAutocomplete(`#participant_${i}`, `#participant_id_${i}`);
                 }
+
                 updateParticipantCount(); // อัปเดตจำนวนผู้เข้าร่วม
             });
+
+            // ฟังก์ชัน AutoComplete
+            function attachAutocomplete(inputSelector, hiddenFieldSelector) {
+                $(inputSelector).autocomplete({
+                    source: function(request, response) {
+                        console.log('Autocomplete triggered');
+                        $.ajax({
+                            url: '{{ route("users.autocomplete") }}',
+                            data: {
+                                term: request.term
+                            },
+                            success: function(data) {
+                                console.log(data);
+                                response(data);
+                            }
+                        });
+                    },
+                    minLength: 2,
+                    select: function(event, ui) {
+                        $(inputSelector).val(ui.item.label); // แสดงชื่อใน input field
+                        $(hiddenFieldSelector).val(ui.item.id); // เก็บ user_id ใน hidden input
+                        return false;
+                    }
+                });
+            }
 
             // ฟังก์ชันลบผู้เข้าร่วมประชุม
             $(document).on('click', '.remove-participant', function() {
@@ -210,70 +297,34 @@
                 });
             }
 
-            // เมื่อผู้ใช้กดปุ่ม "ตรวจสอบว่างหรือไม่"
-            $('#check_availability').on('click', function() {
-                var bookingStartDate = $('#booking_start_date').val();
-                var bookingEndDate = $('#booking_end_date').val();
-                var startTime = $('#start_time').val();
-                var endTime = $('#end_time').val();
-                var meetingRoomId = $('#meeting_room_id').val();
 
-                if (!bookingStartDate || !bookingEndDate || !startTime || !endTime || !meetingRoomId) {
-                    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-                    return;
-                }
-
-                // ส่งข้อมูลไปตรวจสอบสถานะการจองด้วย AJAX
-                $.ajax({
-                    url: '{{ route("bookings.checkAvailability") }}', // เส้นทางสำหรับตรวจสอบสถานะ
-                    method: 'GET',
-                    data: {
-                        meeting_room_id: meetingRoomId,
-                        booking_start_date: bookingStartDate,
-                        booking_end_date: bookingEndDate,
-                        start_time: startTime,
-                        end_time: endTime,
-                    },
-                    success: function(response) {
-                        // ตรวจสอบสถานะการจองจาก response
-                        if (response.status === 'available') {
-                            $('#availability_status').text('ว่าง').css('color', 'green');
-                        } else {
-                            $('#availability_status').text('ไม่ว่าง').css('color', 'red');
-                        }
-                    },
-                    error: function() {
-                        $('#availability_status').text('เกิดข้อผิดพลาดในการตรวจสอบ').css('color', 'orange');
-                    }
-                });
-            });
         });
-
-
-        // $('#add').click(function() {
-        //     ++i;
-        //     $('#table').append(
-        //         `<tr>
-        //             <td>
-        //                 <input type="text" name="participants[` + i + `][name]" placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control">
-        //             </td>
-        //             <td>
-        //                 <button type="button" class="btn btn-danger remove-table-row">ลบ</button>
-        //             </td>
-                
-        //         </tr>`);
-
-        // });
-
-        // $(document).on('click', '.remove-table-row', function() {
-        //     $(this).parents('tr').remove();
-        // });
-
-        // function showAlert() {
-        //     alert("You clicked the button!");
-        // }
     </script>
 @endpush
+
+{{-- $('#add').click(function() {
+            ++i;
+            $('#table').append(
+                `<tr>
+                    <td>
+                        <input type="text" name="participants[` + i + `][name]" placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-table-row">ลบ</button>
+                    </td>
+                
+                </tr>`);
+
+        });
+
+        $(document).on('click', '.remove-table-row', function() {
+            $(this).parents('tr').remove();
+        });
+
+        function showAlert() {
+            alert("You clicked the button!");
+        } --}}
+
 
 {{-- <div class="form-group">
             <label for="participants">ผู้เข้าร่วมประชุม:</label>
@@ -296,4 +347,20 @@
                     </div>
                 </div>
             @endforeach
+        </div> --}}
+
+{{-- p2 <div class="mt-4 ">
+            <label class="form-label">ผู้เข้าร่วมประชุม:</label>
+            <table class="table table-borderd" id="table">
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td><input type="text" name="participants[0][name]"
+                            placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control"></td>
+                    <td><button type="button" name="add" id="add" class="btn btn-success"> เพิ่ม
+                        </button></td>
+                </tr>
+            </table>
         </div> --}}
