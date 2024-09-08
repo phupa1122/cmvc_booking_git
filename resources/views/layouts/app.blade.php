@@ -53,6 +53,13 @@
             /* เพิ่มช่องว่างด้านขวา */
             border-color: #A02334;
         }
+
+        .ui-autocomplete .unavailable {
+            background-color: #f8d7da;
+            /* Light red background */
+            color: #721c24;
+            /* Dark red text */
+        }
     </style>
 
 </head>

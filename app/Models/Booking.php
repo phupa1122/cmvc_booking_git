@@ -13,7 +13,7 @@ class Booking extends Model
         'user_id',
         'meeting_room_id',
         'booking_start_date',
-        'booking_end_date',
+        //'booking_end_date',
         'start_time',
         'end_time',
         'status',
@@ -33,11 +33,6 @@ class Booking extends Model
     {
         return $this->hasMany(BookingEquipment::class);
     }
-
-    // public function equipments()
-    // {
-    //     return $this->belongsToMany(Equipment::class);
-    // }
 
     public function participants()
     {

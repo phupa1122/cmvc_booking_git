@@ -38,11 +38,11 @@
                             <input type="date" name="booking_start_date" id="booking_start_date" class="form-control"
                                 required>
                         </div>
-                        <div class="col-md-3 mb-3 mb-md-0">
+                        {{-- <div class="col-md-3 mb-3 mb-md-0">
                             <label for="booking_end_date" class="form-label">วันที่สิ้นสุด</label>
                             <input type="date" name="booking_end_date" id="booking_end_date" class="form-control"
                                 required>
-                        </div>
+                        </div> --}}
                         <div class="col-md-3 mb-3 mb-md-0">
                             <label for="start_time" class="form-label">เวลาเริ่มต้น:</label>
                             <input type="time" name="start_time" id="start_time" class="form-control" required>
@@ -142,15 +142,15 @@
 @endsection
 @push('scripts')
     <script>
-        
         $(document).ready(function() {
             var i = 0;
+            var selectedParticipants = [];
             $('#bookingTable').DataTable({
                 pageLength: 10,
                 responsive: true,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/2.1.5/i18n/th.json'
-                },
+                // language: {
+                //     url: '//cdn.datatables.net/plug-ins/2.1.5/i18n/th.json'
+                // },
             });
 
             // ปิดการใช้งานฟิลด์ตั้งแต่เริ่มต้น
@@ -159,12 +159,12 @@
             // ตรวจสอบความพร้อมของห้องประชุม
             $('#check_availability').on('click', function() {
                 var bookingStartDate = $('#booking_start_date').val();
-                var bookingEndDate = $('#booking_end_date').val();
+                //var bookingEndDate = $('#booking_end_date').val();
                 var startTime = $('#start_time').val();
                 var endTime = $('#end_time').val();
                 var meetingRoomId = $('#meeting_room_id').val();
 
-                if (!bookingStartDate || !bookingEndDate || !startTime || !endTime || !meetingRoomId) {
+                if (!bookingStartDate || !startTime || !endTime || !meetingRoomId) {
                     alert('กรุณากรอกข้อมูลให้ครบถ้วน');
                     return;
                 }
@@ -176,7 +176,7 @@
                     data: {
                         meeting_room_id: meetingRoomId,
                         booking_start_date: bookingStartDate,
-                        booking_end_date: bookingEndDate,
+                        //booking_end_date: bookingEndDate,
                         start_time: startTime,
                         end_time: endTime,
                     },
@@ -195,19 +195,20 @@
                         }
                     },
                     error: function() {
-                        $('#availability_status').text('เกิดข้อผิดพลาดในการตรวจสอบ').css('color', 'orange');
+                        $('#availability_status').text('เกิดข้อผิดพลาดในการตรวจสอบ').css(
+                            'color', 'orange');
                     }
                 });
             });
 
             // ปิดการใช้งานฟิลด์เมื่อมีการเปลี่ยนแปลงห้องประชุม, วันที่ หรือเวลา
-            $('#meeting_room_id, #booking_start_date, #booking_end_date, #start_time, #end_time').on('change', function() {
+            $('#meeting_room_id, #booking_start_date, #start_time, #end_time').on('change', function() {
                 disableFormFields();
                 $('#availability_status').text(''); // ล้างสถานะการจอง
             });
 
-             // ฟังก์ชันปิดการใช้งานฟิลด์
-             function disableFormFields() {
+            // ฟังก์ชันปิดการใช้งานฟิลด์
+            function disableFormFields() {
                 $('#purpose').prop('disabled', true);
                 $('input[name="equipments[]"]').prop('disabled', true);
                 $('#participant_count').prop('disabled', true);
@@ -225,7 +226,8 @@
             $('#participant_count').on('change', function() {
                 var count = $(this).val();
                 $('#participant_fields').empty(); // ล้างข้อมูลเก่าออก
-                
+                selectedParticipants = [];
+
                 for (var i = 0; i < count; i++) {
                     $('#participant_fields').append(`
                         <div class="mb-3 row" id="row_${i}">
@@ -251,30 +253,83 @@
             function attachAutocomplete(inputSelector, hiddenFieldSelector) {
                 $(inputSelector).autocomplete({
                     source: function(request, response) {
-                        console.log('Autocomplete triggered');
                         $.ajax({
-                            url: '{{ route("users.autocomplete") }}',
+                            url: '{{ route('users.autocomplete') }}',
                             data: {
-                                term: request.term
+                                term: request.term,
+                                booking_start_date: $('#booking_start_date').val(),
+                                start_time: $('#start_time').val(),
+                                end_time: $('#end_time').val(),
                             },
                             success: function(data) {
-                                console.log(data);
-                                response(data);
+                                let results = [];
+
+                                // ผู้ใช้ที่ยังว่างอยู่ (แสดงก่อน)
+                                if (data.available_users.length > 0) {
+                                    results.push({
+                                        label: "ผู้ใช้ที่ว่าง",
+                                        value: ""
+                                    });
+                                    $.each(data.available_users, function(index, user) {
+                                        results.push({
+                                            label: user.name,
+                                            value: user.id,
+                                            available: true
+                                        });
+                                    });
+                                }
+
+                                // ผู้ใช้ที่ถูกจองในสถานะ approved หรือ pending (แสดงด้วยสีแดง)
+                                if (data.booked_users.length > 0) {
+                                    results.push({
+                                        label: "ผู้ใช้ที่ถูกจอง",
+                                        value: ""
+                                    });
+                                    $.each(data.booked_users, function(index, user) {
+                                        results.push({
+                                            label: `${user.name} (มีประชุมที่ ${user.meeting_room}, ${user.start_time} - ${user.end_time})`,
+                                            value: user.id,
+                                            available: false // ไม่อนุญาตให้เลือกผู้ใช้นี้
+                                        });
+                                    });
+                                }
+
+                                response(results);
                             }
                         });
                     },
                     minLength: 2,
                     select: function(event, ui) {
-                        $(inputSelector).val(ui.item.label); // แสดงชื่อใน input field
-                        $(hiddenFieldSelector).val(ui.item.id); // เก็บ user_id ใน hidden input
+                        if (!ui.item.available) {
+                            alert('ผู้เข้าร่วมประชุมนี้ถูกจองแล้วในสถานะ approved หรือ pending');
+                            return false; // ป้องกันการเลือกผู้ใช้ที่ถูกจองแล้ว
+                        }
+
+                        $(inputSelector).val(ui.item.label); // แสดงชื่อผู้ใช้ที่เลือก
+                        $(hiddenFieldSelector).val(ui.item.value); // เก็บ user_id ใน hidden input
                         return false;
                     }
-                });
+                }).data('ui-autocomplete')._renderItem = function(ul, item) {
+                    let content = item.available ? item.label : `<span style="color:red;">${item.label}</span>`;
+                    return $('<li>')
+                        .append(content)
+                        .appendTo(ul);
+                };
             }
+
+
 
             // ฟังก์ชันลบผู้เข้าร่วมประชุม
             $(document).on('click', '.remove-participant', function() {
                 var rowId = $(this).data('row-id');
+                $('#' + rowId).remove(); // ลบ row ที่ระบุ
+                var userId = $(`#${rowId} input[type="hidden"]`).val(); // ดึง user_id ของผู้เข้าร่วมประชุม
+
+                // ลบ user_id ออกจากรายการที่เลือก
+                selectedParticipants = selectedParticipants.filter(function(id) {
+                    return id !== userId;
+                });
+
                 $('#' + rowId).remove(); // ลบ row ที่ระบุ
                 updateParticipantCount(); // อัปเดตจำนวนผู้เข้าร่วม
             });
@@ -301,66 +356,3 @@
         });
     </script>
 @endpush
-
-{{-- $('#add').click(function() {
-            ++i;
-            $('#table').append(
-                `<tr>
-                    <td>
-                        <input type="text" name="participants[` + i + `][name]" placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control">
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger remove-table-row">ลบ</button>
-                    </td>
-                
-                </tr>`);
-
-        });
-
-        $(document).on('click', '.remove-table-row', function() {
-            $(this).parents('tr').remove();
-        });
-
-        function showAlert() {
-            alert("You clicked the button!");
-        } --}}
-
-
-{{-- <div class="form-group">
-            <label for="participants">ผู้เข้าร่วมประชุม:</label>
-            <select name="participants[]" id="participants" class="form-control" multiple>
-                @foreach ($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                @endforeach
-            </select>
-        </div> --}}
-
-
-{{-- //v2<div class="row">
-            @foreach ($users as $user)
-                <div class="col-md-4 mb-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="participants[]"
-                            value="{{ $user->id }}" id="participant_{{ $user->id }}">
-                        <label class="form-check-label"
-                            for="participant_{{ $user->id }}">{{ $user->name }}</label>
-                    </div>
-                </div>
-            @endforeach
-        </div> --}}
-
-{{-- p2 <div class="mt-4 ">
-            <label class="form-label">ผู้เข้าร่วมประชุม:</label>
-            <table class="table table-borderd" id="table">
-                <tr>
-                    <th></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <td><input type="text" name="participants[0][name]"
-                            placeholder="กรอก ชื่อ-นามสกุล ผู้เข้าร่วม" class="form-control"></td>
-                    <td><button type="button" name="add" id="add" class="btn btn-success"> เพิ่ม
-                        </button></td>
-                </tr>
-            </table>
-        </div> --}}

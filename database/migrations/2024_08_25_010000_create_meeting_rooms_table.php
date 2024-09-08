@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('meeting_rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('des');
             $table->string('location');
             $table->integer('capacity');
             $table->string('equipment')->nullable(); // JSON or string of available equipment

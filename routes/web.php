@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
 //Meeting-room
 Route::resource('/meeting-rooms', MeetingRoomController::class);
 Route::get('/bookings/check-availability', [App\Http\Controllers\BookingController::class, 'checkAvailability'])->name('bookings.checkAvailability');
-Route::get('/users/autocomplete', [App\Http\Controllers\UserController::class, 'autocomplete'])->name('users.autocomplete');
+//Route::get('/users/autocomplete', [App\Http\Controllers\UserController::class, 'autocomplete'])->name('users.autocomplete');
+Route::get('/users/autocomplete', [BookingController::class, 'getAvailableUsers'])->name('users.autocomplete');
 
 //Route::get('/meeting-rooms/create', [MeetingRoomController::class,'create'])->name('meeting_room.create');
