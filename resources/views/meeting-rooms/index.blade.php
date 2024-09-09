@@ -6,11 +6,13 @@
         <div class="col">
             <h1>รายการห้องประชุม</h1>
         </div>
+        @if(auth()->user()->is_admin == 1) <!-- เฉพาะ Admin เท่านั้นที่เห็นปุ่มเพิ่มห้องประชุม -->
         <div class="col-auto">
             <a href="{{ route('meeting-rooms.create') }}" class="btn btn-primary btn-lg">
                 <i class="fas fa-plus-circle me-2"></i>เพิ่มห้องประชุม
             </a>
         </div>
+        @endif
     </div>
 
     @if(session('success'))
@@ -29,7 +31,9 @@
                             <th>ชื่อห้องประชุม</th>
                             <th>ความจุ (ที่นั่ง)</th>
                             <th>สถานที่</th>
+                            @if(auth()->user()->is_admin == 1) <!-- เฉพาะ Admin ที่จะเห็นคอลัมน์การจัดการ -->
                             <th class="text-center">การจัดการ</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -38,6 +42,7 @@
                             <td>{{ $room->name }}</td>
                             <td>{{ $room->capacity }} ที่นั่ง</td>
                             <td>{{ $room->location }}</td>
+                            @if(auth()->user()->is_admin == 1) <!-- เฉพาะ Admin เท่านั้นที่เห็นปุ่มการจัดการ -->
                             <td class="text-center">
                                 <a href="{{ route('meeting-rooms.edit', $room->id) }}" class="btn btn-warning btn-sm me-2">
                                     <i class="fas fa-edit me-1"></i>แก้ไข
@@ -50,6 +55,7 @@
                                     </button>
                                 </form>
                             </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>
@@ -68,7 +74,7 @@
                 url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json'
             },
             columnDefs: [
-                { orderable: false, targets: 3 }
+                { orderable: false, targets: {{ auth()->user()->is_admin == 1 ? 3 : '' }} }
             ]
         });
     });

@@ -2,29 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
 class UserController extends Controller
 {
-    public function autocomplete(Request $request)
-{
-    $term = $request->get('term');
-
-    // ดึงชื่อจาก table users ที่ตรงกับการค้นหา
-    $users = User::where('name', 'like', '%' . $term . '%')->get();
-
-    // แปลงข้อมูลเพื่อใช้ใน AutoComplete
-    $data = [];
-    foreach ($users as $user) {
-        $data[] = [
-            'id' => $user->id,
-            'label' => $user->name,  // นี่จะเป็นค่าที่แสดงใน AutoComplete
-            'value' => $user->name,  // นี่คือค่าที่จะถูกเติมใน input
-        ];
+    public function __construct()
+    {
+        $this->middleware('is_admin');
     }
 
-    return response()->json($data);
-}
+    // ฟังก์ชันแสดงรายการผู้ใช้ทั้งหมด
+    public function index()
+    {
+        $users = User::all();
+        return view('users.index', compact('users'));
+    }
+
+    // ฟังก์ชันแสดงฟอร์มแก้ไขข้อมูลผู้ใช้
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('users.edit', compact('user'));
+    }
+
+    // ฟังก์ชันบันทึกการเปลี่ยนแปลงข้อมูลผู้ใช้
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'department' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:15',
+            'is_admin' => 'required|boolean',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'department' => $request->department,
+            'phone' => $request->phone,
+            'is_admin' => $request->is_admin,
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'ข้อมูลผู้ใช้ได้รับการอัปเดตเรียบร้อยแล้ว');
+    }
+
+    // ฟังก์ชันลบผู้ใช้
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'ลบผู้ใช้เรียบร้อยแล้ว');
+    }
 }

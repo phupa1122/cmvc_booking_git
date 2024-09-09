@@ -108,7 +108,12 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('admin.home') }}">Dashboard</a>
+                                    @if (auth()->user()->is_admin)
+                                        <a class="dropdown-item" href="{{ route('admin.home') }}">Dashboard</a>
+                                        <a class="dropdown-item" href="{{ route('users.index') }}">จัดการผู้ใช้</a>
+                                    @else
+                                        <a class="dropdown-item" href="{{ route('home') }}">Dashboard</a>
+                                    @endif
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class MeetingReport extends Model
 {
     use HasFactory;
+
+    
     public function booking()
     {
         return $this->hasOne(Booking::class);
