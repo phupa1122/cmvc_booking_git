@@ -161,6 +161,36 @@ class BookingController extends Controller
             'booked_users' => $bookedUserDetails,           // ผู้ใช้ที่มีการประชุมอยู่ในสถานะ approved หรือ pending
         ]);
     }
+    //ฟังก์ชันเพื่อดึงข้อมูลการจองและส่งกลับไปยัง AJAX request
+    public function getBookingDetails($id)
+{
+    try {
+        // ดึงข้อมูลการจองพร้อมกับห้องประชุมและผู้เข้าร่วม
+        $booking = Booking::with('meetingRoom', 'participants.user')->findOrFail($id);
+
+        // ตรวจสอบว่ามีข้อมูลห้องประชุมหรือไม่
+        if (!$booking->meetingRoom) {
+            return response()->json(['error' => 'ไม่มีข้อมูลห้องประชุม'], 404);
+        }
+
+        return response()->json([
+            'booking' => $booking,  // ส่งข้อมูลการจองกลับไป
+            'meetingRoom' => $booking->meetingRoom,  // ส่งข้อมูลห้องประชุมกลับไป
+            'participants' => $booking->participants->map(function ($participant) {
+                return [
+                    'name' => $participant->user->name,
+                    'status' => $participant->status
+                ];
+            }),
+        ]);
+    } catch (\Exception $e) {
+        // จับข้อผิดพลาดและส่งข้อความกลับไปยัง client
+        return response()->json(['error' => 'เกิดข้อผิดพลาดในการดึงข้อมูล'], 500);
+    }
+}
+
+
+
 
 
 }

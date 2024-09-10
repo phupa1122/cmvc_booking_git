@@ -66,7 +66,8 @@ Route::post('meeting/respond/{participant}', [HomeController::class, 'respondToM
 Route::middleware(['auth', 'is_admin'])->group(function () {
    Route::get('admin/home', [AdminController::class, 'index'])->name('admin.home');
    Route::post('booking/respond/{booking}', [AdminController::class, 'respondToBooking'])->name('booking.respond');
-   Route::get('booking/details/{booking}', [AdminController::class, 'bookingDetails'])->name('booking.details');
+   //Route::get('booking/details/{booking}', [AdminController::class, 'bookingDetails'])->name('booking.details');
    Route::get('booking/details/ajax/{booking}', [AdminController::class, 'bookingDetailsAjax'])->name('booking.details.ajax');
-
 });
+Route::get('booking/details/{id}', [BookingController::class, 'getBookingDetails'])->name('booking.details.ajax');
+

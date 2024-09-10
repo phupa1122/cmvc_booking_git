@@ -3,9 +3,10 @@
 @section('title', 'Booking CMVC')
 
 @section('content')
+
     <div class="container py-5">
 
-        <h1>จองห้องประชุม</h1>
+
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -18,7 +19,10 @@
 
         <form action="{{ route('bookings.store') }}" method="POST">
             @csrf
-            <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card shadow-lg border-0 rounded-lg ">
+                <div class="card-header">
+                    <h1>จองห้องประชุม</h1>
+                </div>
                 <div class="card-body p-5">
                     <div class="row mb-4">
                         <div class="col-md-12">
@@ -94,14 +98,18 @@
                     {{-- p2 --}}
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-lg px-5">ยืนยันการจอง</button>
+                        <button type="submit" class="btn btn-primary btn-lg px-5" id="submit_booking"
+                            name="submit_booking">ยืนยันการจอง</button>
                     </div>
                 </div>
             </div>
         </form>
 
-        <h1 class="mt-5">รายการจองห้องประชุม</h1>
-        <div class="card shadow-lg border-0 rounded-lg">
+
+        <div class="card mt-5 shadow-lg border-0 rounded-lg">
+            <div class="card-header">
+                <h1>รายการจองห้องประชุม</h1>
+            </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover" id="bookingTable">
@@ -119,13 +127,11 @@
                         </thead>
                         <tbody>
                             @foreach ($bookings as $booking)
-                                <tr>
+                                <tr class="clickable-row" data-id="{{ $booking->id }}">
                                     <td class="text-center">{{ $booking->meetingRoom->name }}</td>
                                     <td class="text-center">{{ $booking->booking_start_date }}</td>
-                                    {{-- <td class="text-center">{{ $booking->booking_end_date }}</td> --}}
                                     <td class="text-center">{{ $booking->start_time }}</td>
                                     <td class="text-center">{{ $booking->end_time }}</td>
-                                    {{-- <td>{{ $booking->purpose }}</td> --}}
                                     <td class="text-center">{{ $booking->user->name }}</td>
                                     <td class="text-center"><span
                                             class="badge bg-{{ $booking->status == 'approved' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">{{ $booking->status }}</span>
@@ -139,18 +145,98 @@
         </div>
     </div>
 
+
+    <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingDetailsModalLabel">รายละเอียดการจอง</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>ชื่อห้องประชุม:</strong> <span id="roomName"></span></p>
+                    <p><strong>วันที่:</strong> <span id="bookingDate"></span></p>
+                    <p><strong>เวลา:</strong> <span id="bookingTime"></span></p>
+                    <p><strong>ผู้เข้าร่วมประชุม:</strong></p>
+                    <ul id="participantsList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('scripts')
     <script>
         $(document).ready(function() {
             var i = 0;
             var selectedParticipants = [];
+            $('.clickable-row').on('click', function() {
+                var bookingId = $(this).data('id'); // ดึงค่า booking_id จาก data-id
+
+                // ส่ง AJAX request เพื่อดึงข้อมูลการจอง
+                $.ajax({
+                    url: '{{ url('booking/details') }}/' + bookingId,
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response);
+                        // ตรวจสอบว่ามีข้อมูลการจองและห้องประชุมหรือไม่
+                        if (response.booking && response.meetingRoom) {
+                            $('#roomName').text(response.meetingRoom
+                            .name); // แสดงชื่อห้องประชุม
+                        } else {
+                            $('#roomName').text('ไม่มีข้อมูลห้องประชุม');
+                        }
+
+                        // ตรวจสอบว่ามีข้อมูลวันเวลาหรือไม่
+                        if (response.booking) {
+                            $('#bookingDate').text(response.booking.booking_start_date);
+                            $('#bookingTime').text(response.booking.start_time + ' - ' +
+                                response.booking.end_time);
+                        } else {
+                            $('#bookingDate').text('ไม่มีข้อมูลวันที่');
+                            $('#bookingTime').text('ไม่มีข้อมูลเวลา');
+                        }
+
+                        // แสดงรายชื่อผู้เข้าร่วมประชุม
+                        $('#participantsList').empty();
+                        if (response.participants && response.participants.length > 0) {
+                            response.participants.forEach(function(participant) {
+                                var statusText = '';
+                                var statusClass = '';
+                                if (participant.status === 'approved') {
+                                    statusText = 'ตอบรับแล้ว';
+                                    statusClass = 'text-success';
+                                } else if (participant.status === 'pending') {
+                                    statusText = 'รอตอบรับ';
+                                    statusClass = 'text-warning';
+                                } else if (participant.status === 'cancel') {
+                                    statusText = 'ปฏิเสธแล้ว';
+                                    statusClass = 'text-danger';
+                                }
+
+                                $('#participantsList').append('<li>' + participant
+                                    .name + ' - <span class="' + statusClass +
+                                    '">' + statusText + '</span></li>');
+                            });
+                        } else {
+                            $('#participantsList').append('<li>ไม่มีผู้เข้าร่วมประชุม</li>');
+                        }
+
+                        // เปิด Modal
+                        $('#bookingDetailsModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr
+                        .responseText); // แสดงข้อความข้อผิดพลาดจากเซิร์ฟเวอร์ในคอนโซล
+                    }
+                });
+            });
             $('#bookingTable').DataTable({
                 pageLength: 10,
                 responsive: true,
-                // language: {
-                //     url: '//cdn.datatables.net/plug-ins/2.1.5/i18n/th.json'
-                // },
+                language: {
+                    url: '{{ asset('js/th.json') }}'
+                },
             });
 
             // ปิดการใช้งานฟิลด์ตั้งแต่เริ่มต้น
@@ -212,6 +298,7 @@
                 $('#purpose').prop('disabled', true);
                 $('input[name="equipments[]"]').prop('disabled', true);
                 $('#participant_count').prop('disabled', true);
+                $('#submit_booking').prop('disabled', true);
                 $('#participant_fields').empty(); // ล้างช่องกรอกผู้เข้าร่วมประชุม
             }
 
@@ -220,6 +307,7 @@
                 $('#purpose').prop('disabled', false);
                 $('input[name="equipments[]"]').prop('disabled', false);
                 $('#participant_count').prop('disabled', false);
+                $('#submit_booking').prop('disabled', false);
             }
 
             // เมื่อผู้ใช้กรอกจำนวนผู้เข้าร่วมประชุม
@@ -351,6 +439,8 @@
                     $(this).attr('id', 'row_' + index);
                 });
             }
+
+
 
 
         });

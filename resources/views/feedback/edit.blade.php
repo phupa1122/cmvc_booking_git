@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>แก้ไขข้อเสนอแนะ</h1>
+    <h1 class="text-black">แก้ไขข้อเสนอแนะ</h1>
     <form action="{{ route('feedback.update', $feedback->id) }}" method="POST">
         @csrf
         @method('PUT')

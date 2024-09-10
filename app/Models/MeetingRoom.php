@@ -10,13 +10,16 @@ class MeetingRoom extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'des',
         'location',
         'capacity',
         'equipment',
+        'image'
+        
     ];
     public function bookings() {
         return $this->hasMany(Booking::class);
     }
     
-    
+     
 }

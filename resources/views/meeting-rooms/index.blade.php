@@ -2,19 +2,7 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="row mb-4">
-        <div class="col">
-            <h1>รายการห้องประชุม</h1>
-        </div>
-        @if(auth()->user()->is_admin == 1) <!-- เฉพาะ Admin เท่านั้นที่เห็นปุ่มเพิ่มห้องประชุม -->
-        <div class="col-auto">
-            <a href="{{ route('meeting-rooms.create') }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus-circle me-2"></i>เพิ่มห้องประชุม
-            </a>
-        </div>
-        @endif
-    </div>
-
+    
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -22,13 +10,16 @@
         </div>
     @endif
 
-    <div class="card shadow-lg border-0 rounded-lg">
+    <div class="card shadow-lg border-0 rounded-lg mt-3">
+        <div class="card-header"><h1>รายการห้องประชุม</h1></div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover" id="meetingRoomTable">
                     <thead class="table-light">
-                        <tr>
+                        <tr class="text-center">
+                            <th>รูปภาพ</th>
                             <th>ชื่อห้องประชุม</th>
+                            <th>รายละเอียด</th>
                             <th>ความจุ (ที่นั่ง)</th>
                             <th>สถานที่</th>
                             @if(auth()->user()->is_admin == 1) <!-- เฉพาะ Admin ที่จะเห็นคอลัมน์การจัดการ -->
@@ -38,8 +29,16 @@
                     </thead>
                     <tbody>
                         @foreach($rooms as $room)
-                        <tr>
+                        <tr class="text-center">
+                            <td>
+                                @if($room->image)
+                                    <img src="{{ asset('images/' . $room->image) }}" alt="{{ $room->name }}" width="100">
+                                @else
+                                    ไม่มีรูปภาพ
+                                @endif
+                            </td>                
                             <td>{{ $room->name }}</td>
+                            <td>{{ $room->des }}</td>
                             <td>{{ $room->capacity }} ที่นั่ง</td>
                             <td>{{ $room->location }}</td>
                             @if(auth()->user()->is_admin == 1) <!-- เฉพาะ Admin เท่านั้นที่เห็นปุ่มการจัดการ -->
@@ -63,6 +62,13 @@
             </div>
         </div>
     </div>
+    @if(auth()->user()->is_admin == 1) <!-- เฉพาะ Admin เท่านั้นที่เห็นปุ่มเพิ่มห้องประชุม -->
+        <div class="mt-3">
+            <a href="{{ route('meeting-rooms.create') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus-circle me-2"></i>เพิ่มห้องประชุม
+            </a>
+        </div>
+        @endif
 </div>
 @endsection
 
@@ -71,7 +77,7 @@
     $(document).ready(function() {
         $('#meetingRoomTable').DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json'
+                url: '{{ asset('js/th.json') }}'
             },
             columnDefs: [
                 { orderable: false, targets: {{ auth()->user()->is_admin == 1 ? 3 : '' }} }

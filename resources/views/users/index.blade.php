@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container py-5">
-        <h1>จัดการผู้ใช้</h1>
+        
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -12,11 +12,12 @@
         @endif
 
         <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header"><h1>จัดการผู้ใช้</h1></div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover" id="userTable">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="text-center">
                                 <th>ชื่อผู้ใช้</th>
                                 <th>อีเมล</th>
                                 <th>สิทธิ์ผู้ใช้</th>
@@ -25,7 +26,7 @@
                         </thead>
                         <tbody>
                             @foreach ($users as $user)
-                                <tr>
+                                <tr class="text-center">
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->is_admin ? 'Admin' : 'ผู้ใช้ทั่วไป' }}</td>
@@ -58,7 +59,7 @@
         $(document).ready(function() {
             $('#userTable').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json'
+                    url: '{{ asset('js/th.json') }}'
                 },
                 columnDefs: [{
                     orderable: false,

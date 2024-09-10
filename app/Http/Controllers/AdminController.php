@@ -34,15 +34,15 @@ class AdminController extends Controller
     }
 
     // ฟังก์ชันสำหรับแสดงรายละเอียดการจอง
-    public function bookingDetails($bookingId)
-    {
-        $booking = Booking::with('meetingRoom', 'participants.user')->findOrFail($bookingId);
+    // public function bookingDetails($bookingId)
+    // {
+    //     $booking = Booking::with('meetingRoom', 'participants.user')->findOrFail($bookingId);
 
-        return view('bookingDetails', compact('booking'));
-    }
+    //     return view('bookingDetails', compact('booking'));
+    // }
 
     public function bookingDetailsAjax($bookingId)
-{
+    {
     // ดึงข้อมูลการจองและผู้เข้าร่วมประชุม
     $booking = Booking::with('meetingRoom', 'participants.user')->findOrFail($bookingId);
 
@@ -54,6 +54,6 @@ class AdminController extends Controller
             return $participant->user->name; // ส่งรายชื่อผู้เข้าร่วม
         }),
     ]);
-}
+    }
 
 }

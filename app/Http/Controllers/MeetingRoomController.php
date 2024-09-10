@@ -24,7 +24,16 @@ class MeetingRoomController extends Controller
             'name' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1',
             'location' => 'required|string|max:255',
+            'des' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();  
+            $request->image->move(public_path('images'), $imageName);
+            $validatedData['image'] = $imageName;
+        }
+
         MeetingRoom::create($validatedData);
 
         return redirect()->route('meeting-rooms.index')->with('success', 'ห้องประชุมถูกเพิ่มเรียบร้อยแล้ว');
@@ -41,7 +50,16 @@ class MeetingRoomController extends Controller
             'name' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1',
             'location' => 'required|string|max:255',
+            'des' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();  
+            $request->image->move(public_path('images'), $imageName);
+            $validatedData['image'] = $imageName;
+        }
+
         $meetingRoom->update($validatedData);
 
         return redirect()->route('meeting-rooms.index')->with('success', 'ห้องประชุมถูกอัปเดตเรียบร้อยแล้ว');

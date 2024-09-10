@@ -25,6 +25,7 @@
 
     <!-- Fonts and additional CSS -->
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- jQuery UI -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -32,18 +33,22 @@
 
     <style>
         body {
-            background-color: #A02334;
+            background-color: #f2f2f2;
+            font-family: 'Kanit', sans-serif;
         }
 
-        h1 {
+        h1,
+        h2 {
             text-align: center;
             color: white;
+            font-family: 'Kanit', sans-serif;
         }
 
         label,
         tr,
         td {
             font-size: 16px;
+            font-family: 'Kanit', sans-serif;
         }
 
         .custom-checkbox input[type="checkbox"] {
@@ -52,20 +57,43 @@
             margin-right: 15px;
             /* เพิ่มช่องว่างด้านขวา */
             border-color: #A02334;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #A02334;
+            /* สีแดงเข้ม */
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            background-color: white;
+
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked {
+            background-color: #A02334;
+            /* สีแดงเมื่อถูกเลือก */
+            border-color: #A02334;
         }
 
         .ui-autocomplete .unavailable {
             background-color: #f8d7da;
             /* Light red background */
-            color: #721c24;
+            color: #A02334;
             /* Dark red text */
         }
+
+        .card-header {
+            background-color: #A02334;
+        }
+
     </style>
 
 </head>
 
 <body>
-    <div id="app">
+    <div id="app" class="element">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container ">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -80,7 +108,42 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
+                        @guest
+                            @if (Route::has('login'))
+                            @endif
 
+                            @if (Route::has('register'))
+                            @endif
+                        @else
+                            @if (auth()->user()->is_admin)
+                                <li class="nav-item dropdown">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('users.index') }}">จัดการผู้ใช้</a>
+                                    </li>
+                                </li>
+                            @else
+                            <li class="nav-item dropdown">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
+                                </li>
+                            </li>
+                            @endif
+                        @endguest
                     </ul>
 
 
@@ -110,7 +173,6 @@
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     @if (auth()->user()->is_admin)
                                         <a class="dropdown-item" href="{{ route('admin.home') }}">Dashboard</a>
-                                        <a class="dropdown-item" href="{{ route('users.index') }}">จัดการผู้ใช้</a>
                                     @else
                                         <a class="dropdown-item" href="{{ route('home') }}">Dashboard</a>
                                     @endif

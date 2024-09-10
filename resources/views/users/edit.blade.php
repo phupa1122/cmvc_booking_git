@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container py-5">
-    <h1>แก้ไขข้อมูลผู้ใช้</h1>
+    <h1 class="text-black">แก้ไขข้อมูลผู้ใช้</h1>
 
     <form action="{{ route('users.update', $user->id) }}" method="POST">
         @csrf
