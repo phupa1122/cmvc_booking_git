@@ -182,7 +182,7 @@
                         // ตรวจสอบว่ามีข้อมูลการจองและห้องประชุมหรือไม่
                         if (response.booking && response.meetingRoom) {
                             $('#roomName').text(response.meetingRoom
-                            .name); // แสดงชื่อห้องประชุม
+                                .name); // แสดงชื่อห้องประชุม
                         } else {
                             $('#roomName').text('ไม่มีข้อมูลห้องประชุม');
                         }
@@ -227,7 +227,7 @@
                     },
                     error: function(xhr, status, error) {
                         console.log(xhr
-                        .responseText); // แสดงข้อความข้อผิดพลาดจากเซิร์ฟเวอร์ในคอนโซล
+                            .responseText); // แสดงข้อความข้อผิดพลาดจากเซิร์ฟเวอร์ในคอนโซล
                     }
                 });
             });
@@ -359,11 +359,15 @@
                                         value: ""
                                     });
                                     $.each(data.available_users, function(index, user) {
-                                        results.push({
-                                            label: user.name,
-                                            value: user.id,
-                                            available: true
-                                        });
+                                        if (!selectedParticipants.includes(user
+                                                .id)) {
+                                            // ตรวจสอบว่าผู้ใช้ไม่ได้ถูกเลือกแล้ว
+                                            results.push({
+                                                label: user.name,
+                                                value: user.id,
+                                                available: true
+                                            });
+                                        }
                                     });
                                 }
 
@@ -393,8 +397,14 @@
                             return false; // ป้องกันการเลือกผู้ใช้ที่ถูกจองแล้ว
                         }
 
+                        if (selectedParticipants.includes(ui.item.value)) {
+                            alert('ผู้ใช้คนนี้ถูกเพิ่มไปแล้ว');
+                            return false; // ป้องกันการเลือกซ้ำ
+                        }
+
                         $(inputSelector).val(ui.item.label); // แสดงชื่อผู้ใช้ที่เลือก
                         $(hiddenFieldSelector).val(ui.item.value); // เก็บ user_id ใน hidden input
+                        selectedParticipants.push(ui.item.value); // เพิ่ม user_id ในรายการที่เลือก
                         return false;
                     }
                 }).data('ui-autocomplete')._renderItem = function(ul, item) {
@@ -418,7 +428,6 @@
                     return id !== userId;
                 });
 
-                $('#' + rowId).remove(); // ลบ row ที่ระบุ
                 updateParticipantCount(); // อัปเดตจำนวนผู้เข้าร่วม
             });
 

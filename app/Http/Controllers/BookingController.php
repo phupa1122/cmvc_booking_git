@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Equipment;
 use App\Models\BookingEquipment;
 use App\Models\Participant;
+use Carbon\Carbon;
 use Auth;
 
 class BookingController extends Controller
@@ -126,7 +127,7 @@ class BookingController extends Controller
         $endTime = $request->end_time;
 
         // ดึงผู้ใช้ทั้งหมด
-        $users = User::all();
+        $users = User::where('is_admin', 0)->get();
 
         // ดึงผู้ใช้ที่มีสถานะ approved หรือ pending ในการประชุมช่วงเวลานั้น
         $bookedUsers = Participant::whereIn('status', ['approved', 'pending'])
@@ -174,8 +175,12 @@ class BookingController extends Controller
             }
 
             return response()->json([
-                'booking' => $booking,  // ส่งข้อมูลการจองกลับไป
-                'meetingRoom' => $booking->meetingRoom,  // ส่งข้อมูลห้องประชุมกลับไป
+                'booking' => $booking,
+                'meetingRoom' => $booking->meetingRoom,
+                'purpose' => $booking->purpose,  // ส่งข้อมูลวัตถุประสงค์กลับไป
+                'equipments' => $booking->bookingEquipments->map(function ($bookingEquipment) {
+                    return $bookingEquipment->equipment->name;
+                }),
                 'participants' => $booking->participants->map(function ($participant) {
                     return [
                         'name' => $participant->user->name,
@@ -196,10 +201,5 @@ class BookingController extends Controller
 
         return view('bookings.my_calendar', compact('bookings'));
     }
-
-
-
-
-
 
 }
