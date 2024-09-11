@@ -163,31 +163,40 @@ class BookingController extends Controller
     }
     //ฟังก์ชันเพื่อดึงข้อมูลการจองและส่งกลับไปยัง AJAX request
     public function getBookingDetails($id)
-{
-    try {
-        // ดึงข้อมูลการจองพร้อมกับห้องประชุมและผู้เข้าร่วม
-        $booking = Booking::with('meetingRoom', 'participants.user')->findOrFail($id);
+    {
+        try {
+            // ดึงข้อมูลการจองพร้อมกับห้องประชุมและผู้เข้าร่วม
+            $booking = Booking::with('meetingRoom', 'participants.user')->findOrFail($id);
 
-        // ตรวจสอบว่ามีข้อมูลห้องประชุมหรือไม่
-        if (!$booking->meetingRoom) {
-            return response()->json(['error' => 'ไม่มีข้อมูลห้องประชุม'], 404);
+            // ตรวจสอบว่ามีข้อมูลห้องประชุมหรือไม่
+            if (!$booking->meetingRoom) {
+                return response()->json(['error' => 'ไม่มีข้อมูลห้องประชุม'], 404);
+            }
+
+            return response()->json([
+                'booking' => $booking,  // ส่งข้อมูลการจองกลับไป
+                'meetingRoom' => $booking->meetingRoom,  // ส่งข้อมูลห้องประชุมกลับไป
+                'participants' => $booking->participants->map(function ($participant) {
+                    return [
+                        'name' => $participant->user->name,
+                        'status' => $participant->status
+                    ];
+                }),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'เกิดข้อผิดพลาดในการดึงข้อมูล'], 500);
         }
-
-        return response()->json([
-            'booking' => $booking,  // ส่งข้อมูลการจองกลับไป
-            'meetingRoom' => $booking->meetingRoom,  // ส่งข้อมูลห้องประชุมกลับไป
-            'participants' => $booking->participants->map(function ($participant) {
-                return [
-                    'name' => $participant->user->name,
-                    'status' => $participant->status
-                ];
-            }),
-        ]);
-    } catch (\Exception $e) {
-        // จับข้อผิดพลาดและส่งข้อความกลับไปยัง client
-        return response()->json(['error' => 'เกิดข้อผิดพลาดในการดึงข้อมูล'], 500);
     }
-}
+    public function myCalendar()
+    {
+        $bookings = Booking::whereHas('participants', function ($query) {
+            $query->where('user_id', auth()->id()) // เงื่อนไขให้ user_id ตรงกับผู้ใช้ที่ล็อกอิน
+                ->where('status', 'approved');   // เงื่อนไขให้สถานะเป็น approved
+        })->with('meetingRoom')->get(['booking_start_date', 'start_time', 'end_time', 'meeting_room_id', 'status']);
+
+        return view('bookings.my_calendar', compact('bookings'));
+    }
+
 
 
 

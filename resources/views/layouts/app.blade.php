@@ -88,6 +88,7 @@
             background-color: #A02334;
         }
 
+        
     </style>
 
 </head>
@@ -96,7 +97,8 @@
     <div id="app" class="element">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container ">
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 40px; margin-right: 10px;">
                     Booking CMVC
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -117,21 +119,6 @@
                         @else
                             @if (auth()->user()->is_admin)
                                 <li class="nav-item dropdown">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('users.index') }}">จัดการผู้ใช้</a>
-                                    </li>
-                                </li>
-                            @else
-                            <li class="nav-item dropdown">
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
                                 </li>
@@ -141,7 +128,25 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
                                 </li>
-                            </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('users.index') }}">จัดการผู้ใช้</a>
+                                </li>
+                                </li>
+                            @else
+                                <li class="nav-item dropdown">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('my.calendar') }}">ตารางประชุมของฉัน</a>
+                                </li>
+                                </li>
                             @endif
                         @endguest
                     </ul>

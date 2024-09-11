@@ -10,7 +10,7 @@
         </div>
     @endif
 
-    <div class="card shadow-lg border-0 rounded-lg mt-3">
+    <div class="card shadow-lg border-0 rounded-lg">
         <div class="card-header"><h1>รายการห้องประชุม</h1></div>
         <div class="card-body">
             <div class="table-responsive">

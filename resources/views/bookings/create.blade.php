@@ -19,7 +19,7 @@
 
         <form action="{{ route('bookings.store') }}" method="POST">
             @csrf
-            <div class="card shadow-lg border-0 rounded-lg ">
+            <div class="card shadow-lg border-0 rounded-lg">
                 <div class="card-header">
                     <h1>จองห้องประชุม</h1>
                 </div>

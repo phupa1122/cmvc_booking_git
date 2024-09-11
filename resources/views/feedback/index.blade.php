@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="container py-5">
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
-        <div class="card shadow-lg border-0 rounded-lg mt-3">
+        <div class="card shadow-lg border-0 rounded-lg">
             <div class="card-header">
                 <h1>รายการข้อเสนอแนะ</h1>
             </div>

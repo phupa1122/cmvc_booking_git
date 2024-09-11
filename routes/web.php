@@ -70,4 +70,4 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
    Route::get('booking/details/ajax/{booking}', [AdminController::class, 'bookingDetailsAjax'])->name('booking.details.ajax');
 });
 Route::get('booking/details/{id}', [BookingController::class, 'getBookingDetails'])->name('booking.details.ajax');
-
+Route::get('/my-calendar', [BookingController::class, 'myCalendar'])->name('my.calendar')->middleware('auth');

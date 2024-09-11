@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+                <div class="card-header text-white">{{ __('Dashboard') }}</div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -17,8 +17,6 @@
                     {{ __('ยินดีต้อนรับ') }}
                     {{ Auth::user()->name }}
                     
-
-                    <!-- แสดงการตอบรับการเข้าร่วมประชุม -->
                     @if($pendingMeetings->isNotEmpty())
                         <h4 class="mt-4">การประชุมที่คุณต้องตอบรับ</h4>
                         <table class="table table-bordered mt-2">
@@ -50,8 +48,6 @@
                     @else
                         <p class="mt-4">ไม่มีการประชุมที่ต้องตอบรับ</p>
                     @endif
-                    <!-- ข้อเสนอแนะ -->
-                    <a href="{{route('feedback.index')}}" class="btn btn-primary mt-2">ข้อเสนอแนะ</a>
                 </div>
             </div>
         </div>
