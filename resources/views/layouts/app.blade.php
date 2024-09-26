@@ -118,34 +118,38 @@
                             @endif
                         @else
                             @if (auth()->user()->is_admin)
-                                <li class="nav-item dropdown">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('users.index') }}">จัดการผู้ใช้</a>
-                                </li>
+                                    <li class="nav-item dropdown">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('users.index') }}">จัดการผู้ใช้</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('users.index') }}">อุปกรณ์</a>
+                                    </li>
                                 </li>
                             @else
                                 <li class="nav-item dropdown">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('my.calendar') }}">ตารางประชุมของฉัน</a>
-                                </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('my.calendar') }}">ตารางประชุมของฉัน</a>
+                                    </li>
+                                    
                                 </li>
                             @endif
                         @endguest

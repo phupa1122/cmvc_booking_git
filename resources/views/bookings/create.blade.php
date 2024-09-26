@@ -415,8 +415,6 @@
                 };
             }
 
-
-
             // ฟังก์ชันลบผู้เข้าร่วมประชุม
             $(document).on('click', '.remove-participant', function() {
                 var rowId = $(this).data('row-id');
@@ -448,10 +446,6 @@
                     $(this).attr('id', 'row_' + index);
                 });
             }
-
-
-
-
         });
     </script>
 @endpush
