@@ -21,5 +21,7 @@ class MeetingRoom extends Model
         return $this->hasMany(Booking::class);
     }
     
-     
+    public function equipment(){
+        return $this->hasMany(MeetingRoomEquipment::class);
+    }
 }

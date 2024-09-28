@@ -9,22 +9,12 @@ use App\Http\Controllers\MeetingRoomController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\UserImportController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\EquipmentController;
 
 //user
-Route::get('/',[BookingController::class,'create']);
-//Route::get('/detail/{id}',[BlogController::class,'detail'])->name('detail');
-
-//admin
- Route::prefix('admin')->group(function(){
-    //  Route::get('/blog',[AdminController::class,'index'])->name('blog');
-    //  Route::get('/create',[AdminController::class,'create'])->name('create')->middleware('is_admin');
-    //  Route::post('/insert',[AdminController::class,'insert'])->name('insert')->middleware('is_admin'); 
-    //  Route::get('/delete/{id}',[AdminController::class,'delete'])->name ('delete');
-    //  Route::get('/change/{id}',[AdminController::class,'change'])->name('change');
-    //  Route::get('/edit/{id}',[AdminController::class,'edit'])->name('edit');
-    //  Route::post('/update/{id}',[AdminController::class,'update'])->name('update');
- });
+Route::get('/', [BookingController::class, 'create']);
 
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -57,6 +47,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
    Route::get('users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
    Route::put('users/{id}', [UserController::class, 'update'])->name('users.update');
    Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+   Route::get('/import', [UserImportController::class, 'showImportForm'])->name('import.form');
+   Route::post('/import', [UserImportController::class, 'import'])->name('users.import');
 });
 
 //Accept
@@ -68,6 +60,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
    Route::post('booking/respond/{booking}', [AdminController::class, 'respondToBooking'])->name('booking.respond');
    //Route::get('booking/details/{booking}', [AdminController::class, 'bookingDetails'])->name('booking.details');
    Route::get('booking/details/ajax/{booking}', [AdminController::class, 'bookingDetailsAjax'])->name('booking.details.ajax');
+   Route::resource('equipment', EquipmentController::class);
 });
 Route::get('booking/details/{id}', [BookingController::class, 'getBookingDetails'])->name('booking.details.ajax');
 Route::get('/my-calendar', [BookingController::class, 'myCalendar'])->name('my.calendar')->middleware('auth');

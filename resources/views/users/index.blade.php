@@ -2,7 +2,6 @@
 
 @section('content')
     <div class="container py-5">
-        
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -12,7 +11,9 @@
         @endif
 
         <div class="card shadow-lg border-0 rounded-lg">
-            <div class="card-header"><h1>จัดการผู้ใช้</h1></div>
+            <div class="card-header">
+                <h1>จัดการผู้ใช้</h1>
+            </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover" id="userTable">
@@ -51,6 +52,16 @@
                 </div>
             </div>
         </div>
+
+
+        @if (auth()->user()->is_admin == 1)
+            <!-- เฉพาะ Admin เท่านั้นที่เห็นปุ่มเพิ่มอุปกรณ์ -->
+            <div class="mt-3">
+                <a href="{{ route('import.form') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>เพิ่มผู้ใช้จาก Excel
+                </a>
+            </div>
+        @endif
     </div>
 @endsection
 
