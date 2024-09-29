@@ -129,9 +129,18 @@
                             @foreach ($bookings as $booking)
                                 <tr class="clickable-row" data-id="{{ $booking->id }}">
                                     <td class="text-center">{{ $booking->meetingRoom->name }}</td>
-                                    <td class="text-center">{{ $booking->booking_start_date }}</td>
-                                    <td class="text-center">{{ $booking->start_time }}</td>
-                                    <td class="text-center">{{ $booking->end_time }}</td>
+                                    <!-- แก้ไขการแสดงวันที่ -->
+                                    <td class="text-center">
+                                        {{ \Carbon\Carbon::parse($booking->booking_start_date)->format('d/m/Y') }}</td>
+
+                                    <!-- แก้ไขการแสดงเวลาเริ่มต้น โดยตัดวินาทีออก -->
+                                    <td class="text-center">
+                                        {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }}</td>
+
+                                    <!-- แก้ไขการแสดงเวลาสิ้นสุด โดยตัดวินาทีออก -->
+                                    <td class="text-center">{{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
+                                    </td>
+                                    
                                     <td class="text-center">{{ $booking->user->name }}</td>
                                     <td class="text-center"><span
                                             class="badge bg-{{ $booking->status == 'approved' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">{{ $booking->status }}</span>

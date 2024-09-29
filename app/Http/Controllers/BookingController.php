@@ -10,7 +10,7 @@ use App\Models\Equipment;
 use App\Models\BookingEquipment;
 use App\Models\Participant;
 use Carbon\Carbon;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -201,5 +201,4 @@ class BookingController extends Controller
 
         return view('bookings.my_calendar', compact('bookings'));
     }
-
 }

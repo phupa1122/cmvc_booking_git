@@ -13,15 +13,17 @@ class MeetingRoom extends Model
         'des',
         'location',
         'capacity',
-        'equipment',
+        //'equipment',
         'image'
-        
+
     ];
-    public function bookings() {
+    public function bookings()
+    {
         return $this->hasMany(Booking::class);
     }
-    
-    public function equipment(){
-        return $this->hasMany(MeetingRoomEquipment::class);
+
+    public function equipment()
+    {
+        return $this->hasMany(MeetingRoomEquipment::class, 'meeting_room_id');
     }
 }

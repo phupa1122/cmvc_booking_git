@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('des');
             $table->string('location');
             $table->integer('capacity');
-            $table->string('equipment')->nullable(); // JSON or string of available equipment
+            //$table->string('equipment')->nullable(); // JSON or string of available equipment
             $table->timestamps();
         });
     }

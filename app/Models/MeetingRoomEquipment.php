@@ -19,7 +19,7 @@ class MeetingRoomEquipment extends Model
      // ความสัมพันธ์กับ MeetingRoom
      public function meetingRoom()
      {
-         return $this->belongsTo(MeetingRoom::class);
+         return $this->belongsTo(MeetingRoom::class, 'meeting_room_id');
      }
  
      // ความสัมพันธ์กับ Equipment
