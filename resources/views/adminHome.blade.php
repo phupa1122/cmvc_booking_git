@@ -43,9 +43,10 @@
                                         @foreach ($pendingBookings as $booking)
                                             <tr>
                                                 <td>{{ $booking->meetingRoom->name }}</td>
-                                                <td>{{ $booking->booking_start_date }}</td>
-                                                <td>{{ $booking->start_time }} - {{ $booking->end_time }}</td>
-                                                <td>
+                                                <td class="text-center">
+                                                    {{ \Carbon\Carbon::parse($booking->booking_start_date)->format('d/m/Y') }}</td>
+                                                <td> {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -  {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}</td>
+                                                <td class="text-center">
                                                     <form action="{{ route('booking.respond', $booking->id) }}"
                                                         method="POST" class="d-inline">
                                                         @csrf

@@ -10,6 +10,8 @@ use App\Models\Equipment;
 use App\Models\BookingEquipment;
 use App\Models\Participant;
 use Carbon\Carbon;
+use App\Mail\MeetingNotification;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
@@ -88,14 +90,20 @@ class BookingController extends Controller
 
         if (!empty($validatedData['participants'])) {
             foreach ($validatedData['participants'] as $participant) {
-                $booking->participants()->create([
-                    'user_id' => $participant['id'],
-                    'status' => 'pending',
-                ]);
+                if (isset($participant['id'])) { // ตรวจสอบว่ามีค่า id อยู่หรือไม่
+                    $booking->participants()->create([
+                        'user_id' => $participant['id'],
+                        'status' => 'pending',
+                    ]);
+                }
             }
         }
 
-        return redirect()->route('bookings.create')->with('success', 'การจองสำเร็จ');
+        foreach ($booking->participants as $participant) {
+            Mail::to($participant->user->email)->send(new MeetingNotification($booking));
+        }
+
+        return redirect()->route('bookings.create')->with('success', 'การจองสำเร็จและส่งการแจ้งเตือนแล้ว');
     }
 
     public function checkAvailability(Request $request)
