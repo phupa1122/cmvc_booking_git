@@ -73,7 +73,7 @@
                     <div class="mb-4">
                         <label class="form-label">เลือกอุปกรณ์ที่ต้องการ:</label>
                         @foreach ($equipment as $item)
-                            <div class="row mb-2">
+                            <div class="row mb-2" id="eqm">
                                 <div class="col-md-6">
                                     <div class="form-check custom-checkbox">
                                         <input class="form-check-input" type="checkbox" name="equipments[{{ $item->id }}][id]"
@@ -311,7 +311,8 @@
             // ฟังก์ชันปิดการใช้งานฟิลด์
             function disableFormFields() {
                 $('#purpose').prop('disabled', true);
-                $('input[name="equipments[]"]').prop('disabled', true);
+                $('input[name^="equipments"]').prop('disabled', true);
+                $('input[name^="equipment"]').prop('disabled', true); 
                 $('#participant_count').prop('disabled', true);
                 $('#submit_booking').prop('disabled', true);
                 $('#participant_fields').empty(); // ล้างช่องกรอกผู้เข้าร่วมประชุม
@@ -320,7 +321,8 @@
             // ฟังก์ชันเปิดการใช้งานฟิลด์
             function enableFormFields() {
                 $('#purpose').prop('disabled', false);
-                $('input[name="equipments[]"]').prop('disabled', false);
+                $('input[name^="equipments"]').prop('disabled', false);  // ปิดการใช้งานฟิลด์ checkbox ของอุปกรณ์
+                $('input[name^="equipment"]').prop('disabled', false); 
                 $('#participant_count').prop('disabled', false);
                 $('#submit_booking').prop('disabled', false);
             }

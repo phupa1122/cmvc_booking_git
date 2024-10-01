@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController; //ถ้าจะใช้ controller อะไรต้องมาใส่ที่ web.php ด้วย
 use App\Http\Controllers\BookingController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserImportController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\MeetingReportController;
 
 //user
 Route::get('/', [BookingController::class, 'create']);
@@ -62,3 +64,9 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 });
 Route::get('booking/details/{id}', [BookingController::class, 'getBookingDetails'])->name('booking.details.ajax');
 Route::get('/my-calendar', [BookingController::class, 'myCalendar'])->name('my.calendar')->middleware('auth');
+
+// Route::get('/meeting-report/create', 'MeetingReportController@create')->name('meeting-report.create');
+// Route::post('/meeting-report/store', 'MeetingReportController@store')->name('meeting-report.store');
+
+Route::get('/meeting-report/create', [MeetingReportController::class, 'create'])->name('meeting-report.create');
+Route::post('/meeting-report/store', [MeetingReportController::class, 'store'])->name('meeting-report.store');
