@@ -32,6 +32,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'position' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:15',
             'is_admin' => 'required|boolean',
@@ -41,6 +42,7 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'position' => $request->position,
             'department' => $request->department,
             'phone' => $request->phone,
             'is_admin' => $request->is_admin,

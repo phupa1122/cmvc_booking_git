@@ -19,6 +19,7 @@ class UsersImport implements ToModel, WithHeadingRow
             'name' => $row['name'], // กำหนดคอลัมน์ที่ตรงกับชื่อฟิลด์ใน Excel
             'email' => $row['email'],
             'password' => bcrypt($row['password']), // เข้ารหัสรหัสผ่าน
+            'position' => $row['position'],
             'department' => $row['department'],  // แผนก
             'phone' => $row['phone'],          // เบอร์โทร
             'is_admin' => $row['is_admin'],    // เป็นแอดมินหรือไม่ (1 หรือ 0)

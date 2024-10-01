@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Feedback;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends Controller
 {

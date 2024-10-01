@@ -19,6 +19,11 @@
         </div>
 
         <div class="mb-3">
+            <label for="position" class="form-label">ตำแหน่ง (ถ้ามี):</label>
+            <input type="text" name="position" id="position" class="form-control" value="{{ $user->position }}">
+        </div>
+
+        <div class="mb-3">
             <label for="department" class="form-label">แผนก (ถ้ามี):</label>
             <input type="text" name="department" id="department" class="form-control" value="{{ $user->department }}">
         </div>
