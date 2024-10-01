@@ -67,9 +67,10 @@
                                 @endforeach
                             </div>
 
+                            
+
                             <div class="d-flex justify-content-end mt-5">
-                                <a href="{{ route('meeting-rooms.index') }}"
-                                    class="btn btn-secondary btn-lg me-2">ยกเลิก</a>
+                                <a href="{{ route('meeting-rooms.index') }}" class="btn btn-secondary btn-lg me-2">ยกเลิก</a>
                                 <button type="submit" class="btn btn-primary btn-lg">บันทึก</button>
                             </div>
                         </form>

@@ -41,7 +41,8 @@ class BookingController extends Controller
             'end_time' => 'required|date_format:H:i|after:start_time',
             'purpose' => 'required|string|max:255',
             'equipments' => 'nullable|array',
-            'equipments.*' => 'exists:equipment,id',
+            'equipments.*.id' => 'exists:equipment,id',
+            'equipments.*.quantity' => 'nullable|integer|min:0',
             'participants' => 'nullable|array',
             'participants.*.id' => 'exists:users,id'
         ]);
@@ -80,10 +81,13 @@ class BookingController extends Controller
         ]);
 
         if (!empty($validatedData['equipments'])) {
-            foreach ($validatedData['equipments'] as $equipmentId) {
+            foreach ($validatedData['equipments'] as $equipmentId=>$equipmentData) {
+
+                $quantity = $request->input("equipment.$equipmentId.quantity") ?? 0;
+
                 $booking->bookingEquipments()->create([
                     'equipment_id' => $equipmentId,
-                    'quantity' => '10',
+                    'quantity' => $quantity,
                 ]);
             }
         }
@@ -100,7 +104,7 @@ class BookingController extends Controller
         }
 
         foreach ($booking->participants as $participant) {
-            Mail::to($participant->user->email)->send(new MeetingNotification($booking,$participant));
+            Mail::to($participant->user->email)->send(new MeetingNotification($booking, $participant));
         }
 
         return redirect()->route('bookings.create')->with('success', 'การจองสำเร็จและส่งการแจ้งเตือนแล้ว');
@@ -164,7 +168,7 @@ class BookingController extends Controller
             ];
         });
 
-        // ส่งคืนผู้ใช้ที่สามารถเพิ่มได้ (ไม่ถูกจองในสถานะ approved หรือ pending)
+        // ส่งคืนผู้ใช้ที่สามารถเพิ่มได้ (ไม่ถูกจองในสถานะ approved หรือ pending) 
         return response()->json([
             'available_users' => $users->diff($bookedUsers), // ผู้ใช้ที่ยังไม่ถูกจอง
             'booked_users' => $bookedUserDetails,           // ผู้ใช้ที่มีการประชุมอยู่ในสถานะ approved หรือ pending

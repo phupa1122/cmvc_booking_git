@@ -69,20 +69,26 @@
                         <textarea name="purpose" id="purpose" class="form-control" rows="3" required></textarea>
                     </div>
 
+                    <!-- ส่วนเลือกอุปกรณ์และจำนวน -->
                     <div class="mb-4">
-                        <label class="form-label">อุปกรณ์ที่ต้องการ:</label>
-                        <div class="row">
-                            @foreach ($equipment as $item)
-                                <div class="col-md-4 mb-2">
+                        <label class="form-label">เลือกอุปกรณ์ที่ต้องการ:</label>
+                        @foreach ($equipment as $item)
+                            <div class="row mb-2">
+                                <div class="col-md-6">
                                     <div class="form-check custom-checkbox">
-                                        <input class="form-check-input" type="checkbox" name="equipments[]"
+                                        <input class="form-check-input" type="checkbox" name="equipments[{{ $item->id }}][id]"
                                             value="{{ $item->id }}" id="equipment_{{ $item->id }}">
-                                        <label class="form-check-label"
-                                            for="equipment_{{ $item->id }}">{{ $item->name }}</label>
+                                        <label class="form-check-label" for="equipment_{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </label>
                                     </div>
                                 </div>
-                            @endforeach
-                        </div>
+                                <div class="col-md-6">
+                                    <input type="number" class="form-control"
+                                        name="equipment[{{ $item->id }}][quantity]" placeholder="จำนวน" min="0">
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="mt-4 mb-4">
@@ -140,7 +146,7 @@
                                     <!-- แก้ไขการแสดงเวลาสิ้นสุด โดยตัดวินาทีออก -->
                                     <td class="text-center">{{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
                                     </td>
-                                    
+
                                     <td class="text-center">{{ $booking->user->name }}</td>
                                     <td class="text-center"><span
                                             class="badge bg-{{ $booking->status == 'approved' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">{{ $booking->status }}</span>
