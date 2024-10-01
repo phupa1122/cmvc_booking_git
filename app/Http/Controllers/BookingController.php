@@ -100,7 +100,7 @@ class BookingController extends Controller
         }
 
         foreach ($booking->participants as $participant) {
-            Mail::to($participant->user->email)->send(new MeetingNotification($booking));
+            Mail::to($participant->user->email)->send(new MeetingNotification($booking,$participant));
         }
 
         return redirect()->route('bookings.create')->with('success', 'การจองสำเร็จและส่งการแจ้งเตือนแล้ว');
