@@ -22,7 +22,7 @@ class MeetingReportController extends Controller
             'participants' => 'required|array',
             'issues' => 'required|array',
         ]);
-        return view('meeting-report.pdf', compact('validated'));
+        //return view('meeting-report.pdf', compact('validated'));
         // สร้าง mpdf พร้อมตั้งค่าให้รองรับภาษาไทย
         $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
         $fontDirs = $defaultConfig['fontDir'];

@@ -81,7 +81,7 @@ class BookingController extends Controller
         ]);
 
         if (!empty($validatedData['equipments'])) {
-            foreach ($validatedData['equipments'] as $equipmentId=>$equipmentData) {
+            foreach ($validatedData['equipments'] as $equipmentId => $equipmentData) {
 
                 $quantity = $request->input("equipment.$equipmentId.quantity") ?? 0;
 
@@ -209,8 +209,8 @@ class BookingController extends Controller
         $bookings = Booking::whereHas('participants', function ($query) {
             $query->where('user_id', auth()->id()) // เงื่อนไขให้ user_id ตรงกับผู้ใช้ที่ล็อกอิน
                 ->where('status', 'approved');   // เงื่อนไขให้สถานะเป็น approved
-        })->with('meetingRoom')->get(['booking_start_date', 'start_time', 'end_time', 'meeting_room_id', 'status']);
-
+        })->with('meetingRoom')->get(['id', 'booking_start_date', 'start_time', 'end_time', 'meeting_room_id', 'status']);
+        //return $bookings;
         return view('bookings.my_calendar', compact('bookings'));
     }
 }

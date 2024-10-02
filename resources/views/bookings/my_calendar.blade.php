@@ -35,7 +35,7 @@
                 events: [
                     @foreach ($bookings as $booking)
                         {
-                            id: '{{ $booking->id }}',
+                            myid: '{{ $booking->id }}',
                             title: '{{ $booking->meetingRoom->name }}',
                             start: '{{ $booking->booking_start_date }}T{{ $booking->start_time }}',
                             end: '{{ $booking->booking_start_date }}T{{ $booking->end_time }}',
@@ -47,9 +47,10 @@
                     @endforeach
                 ],
                 eventClick: function(info) {
+
                     // เรียกใช้ AJAX เมื่อคลิกที่ event
                     $.ajax({
-                        url: '/booking/details/' + info.event.id,
+                        url: '/booking/details/' + info.event._def.extendedProps.myid,
                         method: 'GET',
                         success: function(response) {
                             // แสดงข้อมูลที่ดึงมาใน modal

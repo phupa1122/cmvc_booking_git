@@ -1,8 +1,8 @@
 <?php
 
-
+//ถ้าจะใช้ controller อะไรต้องมาใส่ที่ web.php ด้วย
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController; //ถ้าจะใช้ controller อะไรต้องมาใส่ที่ web.php ด้วย
+use App\Http\Controllers\HomeController; 
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MeetingRoomController;
 use App\Http\Controllers\FeedbackController;
