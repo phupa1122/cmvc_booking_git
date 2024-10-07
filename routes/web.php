@@ -70,3 +70,12 @@ Route::get('/my-calendar', [BookingController::class, 'myCalendar'])->name('my.c
 
 Route::get('/meeting-report/create', [MeetingReportController::class, 'create'])->name('meeting-report.create');
 Route::post('/meeting-report/store', [MeetingReportController::class, 'store'])->name('meeting-report.store');
+
+Route::middleware(['auth'])->group(function () {
+   Route::get('meeting-reports', [MeetingReportController::class, 'index'])->name('meeting-report.index');
+   Route::get('meeting-reports/create', [MeetingReportController::class, 'create'])->name('meeting-report.create');
+   Route::post('meeting-reports/store', [MeetingReportController::class, 'store'])->name('meeting-report.store');
+   Route::get('meeting-reports/view/{id}', [MeetingReportController::class, 'view'])->name('meeting-report.view');
+   Route::delete('/meeting-report/{id}', [MeetingReportController::class, 'destroy'])->name('meeting-report.destroy');
+
+});

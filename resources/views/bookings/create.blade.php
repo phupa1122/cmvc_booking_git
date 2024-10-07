@@ -76,8 +76,9 @@
                             <div class="row mb-2" id="eqm">
                                 <div class="col-md-6">
                                     <div class="form-check custom-checkbox">
-                                        <input class="form-check-input" type="checkbox" name="equipments[{{ $item->id }}][id]"
-                                            value="{{ $item->id }}" id="equipment_{{ $item->id }}">
+                                        <input class="form-check-input" type="checkbox"
+                                            name="equipments[{{ $item->id }}][id]" value="{{ $item->id }}"
+                                            id="equipment_{{ $item->id }}">
                                         <label class="form-check-label" for="equipment_{{ $item->id }}">
                                             {{ $item->name }}
                                         </label>
@@ -124,8 +125,8 @@
                                 <th>ชื่อห้องประชุม</th>
                                 <th>วันที่</th>
                                 {{-- <th>วันที่สิ้นสุด</th> --}}
-                                <th>เวลาเริ่มต้น</th>
-                                <th>เวลาสิ้นสุด</th>
+                                <th>เวลา</th>
+                                {{-- <th>เวลาสิ้นสุด</th> --}}
                                 {{-- <th>จุดประสงค์</th> --}}
                                 <th>ผู้จอง</th>
                                 <th>สถานะ</th>
@@ -141,15 +142,16 @@
 
                                     <!-- แก้ไขการแสดงเวลาเริ่มต้น โดยตัดวินาทีออก -->
                                     <td class="text-center">
-                                        {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }}</td>
+                                        {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
+                                        {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}</td>
 
-                                    <!-- แก้ไขการแสดงเวลาสิ้นสุด โดยตัดวินาทีออก -->
-                                    <td class="text-center">{{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
-                                    </td>
+
 
                                     <td class="text-center">{{ $booking->user->name }}</td>
-                                    <td class="text-center"><span
-                                            class="badge bg-{{ $booking->status == 'approved' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">{{ $booking->status }}</span>
+                                    <td class="text-center">
+                                        <span class="badge bg-{{ $booking->status == 'approved' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">
+                                            {{ $booking->status == 'approved' ? 'อนุมัติแล้ว' : ($booking->status == 'pending' ? 'รอดำเนินการ' : 'ปฏิเสธ') }}
+                                        </span>
                                     </td>
                                 </tr>
                             @endforeach
@@ -194,30 +196,46 @@
                     method: 'GET',
                     success: function(response) {
                         console.log(response);
-                        // ตรวจสอบว่ามีข้อมูลการจองและห้องประชุมหรือไม่
+
+                        // Check if booking and meetingRoom data are available
                         if (response.booking && response.meetingRoom) {
-                            $('#roomName').text(response.meetingRoom
-                                .name); // แสดงชื่อห้องประชุม
+                            $('#roomName').text(response.meetingRoom.name); // Show room name
                         } else {
                             $('#roomName').text('ไม่มีข้อมูลห้องประชุม');
                         }
 
-                        // ตรวจสอบว่ามีข้อมูลวันเวลาหรือไม่
+                        // Check if booking data is available
                         if (response.booking) {
-                            $('#bookingDate').text(response.booking.booking_start_date);
-                            $('#bookingTime').text(response.booking.start_time + ' - ' +
-                                response.booking.end_time);
+                            // Format date to "day month year" format using JavaScript
+                            var bookingDate = new Date(response.booking.booking_start_date);
+                            var options = {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                            };
+                            var formattedDate = bookingDate.toLocaleDateString('th-TH',
+                            options);
+
+                            // Format time to "HH:MM" format using JavaScript
+                            var startTime = response.booking.start_time.slice(0,
+                            5); // Get "HH:MM" from the time string
+                            var endTime = response.booking.end_time.slice(0, 5);
+
+                            // Set formatted date and time to the modal
+                            $('#bookingDate').text(formattedDate);
+                            $('#bookingTime').text(startTime + ' - ' + endTime);
                         } else {
                             $('#bookingDate').text('ไม่มีข้อมูลวันที่');
                             $('#bookingTime').text('ไม่มีข้อมูลเวลา');
                         }
 
-                        // แสดงรายชื่อผู้เข้าร่วมประชุม
+                        // Display the participants in the list
                         $('#participantsList').empty();
                         if (response.participants && response.participants.length > 0) {
                             response.participants.forEach(function(participant) {
                                 var statusText = '';
                                 var statusClass = '';
+
                                 if (participant.status === 'approved') {
                                     statusText = 'ตอบรับแล้ว';
                                     statusClass = 'text-success';
@@ -237,12 +255,11 @@
                             $('#participantsList').append('<li>ไม่มีผู้เข้าร่วมประชุม</li>');
                         }
 
-                        // เปิด Modal
+                        // Show the modal
                         $('#bookingDetailsModal').modal('show');
                     },
                     error: function(xhr, status, error) {
-                        console.log(xhr
-                            .responseText); // แสดงข้อความข้อผิดพลาดจากเซิร์ฟเวอร์ในคอนโซล
+                        console.log(xhr.responseText); // Show error message in console
                     }
                 });
             });
@@ -312,7 +329,7 @@
             function disableFormFields() {
                 $('#purpose').prop('disabled', true);
                 $('input[name^="equipments"]').prop('disabled', true);
-                $('input[name^="equipment"]').prop('disabled', true); 
+                $('input[name^="equipment"]').prop('disabled', true);
                 $('#participant_count').prop('disabled', true);
                 $('#submit_booking').prop('disabled', true);
                 $('#participant_fields').empty(); // ล้างช่องกรอกผู้เข้าร่วมประชุม
@@ -321,8 +338,8 @@
             // ฟังก์ชันเปิดการใช้งานฟิลด์
             function enableFormFields() {
                 $('#purpose').prop('disabled', false);
-                $('input[name^="equipments"]').prop('disabled', false);  // ปิดการใช้งานฟิลด์ checkbox ของอุปกรณ์
-                $('input[name^="equipment"]').prop('disabled', false); 
+                $('input[name^="equipments"]').prop('disabled', false); // ปิดการใช้งานฟิลด์ checkbox ของอุปกรณ์
+                $('input[name^="equipment"]').prop('disabled', false);
                 $('#participant_count').prop('disabled', false);
                 $('#submit_booking').prop('disabled', false);
             }

@@ -2,8 +2,14 @@
 
 @section('content')
     <div class="container py-5">
-        <h1 class="text-black">ตารางประชุมของฉัน</h1>
-        <div id="calendar"></div>
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header">
+                <h1>รายงานการประชุม</h1>
+            </div>
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
     </div>
     <style>
         .fc-toolbar-title {

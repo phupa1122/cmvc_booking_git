@@ -16,7 +16,8 @@
                         <tr>
                             <th>ผู้ใช้</th>
                             <th>เนื้อหา</th>
-                            @if (auth()->user()->is_admin == 0) <!-- เฉพาะผู้ใช้ทั่วไปเท่านั้นที่เห็นส่วนการจัดการ -->
+                            @if (auth()->user()->is_admin == 0)
+                                <!-- เฉพาะผู้ใช้ทั่วไปเท่านั้นที่เห็นส่วนการจัดการ -->
                                 <th>การจัดการ</th>
                             @endif
                         </tr>
@@ -26,7 +27,8 @@
                             <tr>
                                 <td>{{ $feedback->user->name }}</td>
                                 <td>{{ $feedback->feedback }}</td>
-                                @if (auth()->user()->is_admin == 0) <!-- เฉพาะผู้ใช้ทั่วไปเท่านั้นที่เห็นส่วนการจัดการ -->
+                                @if (auth()->user()->is_admin == 0)
+                                    <!-- เฉพาะผู้ใช้ทั่วไปเท่านั้นที่เห็นส่วนการจัดการ -->
                                     <td>
                                         @if (Auth::id() == $feedback->user_id)
                                             <a href="{{ route('feedback.edit', $feedback->id) }}"
@@ -49,7 +51,8 @@
             </div>
         </div>
 
-        @if (auth()->user()->is_admin == 0) <!-- เฉพาะผู้ใช้ทั่วไปเท่านั้นที่เห็นปุ่มเพิ่มข้อเสนอแนะ -->
+        @if (auth()->user()->is_admin == 0)
+            <!-- เฉพาะผู้ใช้ทั่วไปเท่านั้นที่เห็นปุ่มเพิ่มข้อเสนอแนะ -->
             <a href="{{ route('feedback.create') }}" class="btn btn-primary mt-2">เพิ่มข้อเสนอแนะ</a>
         @endif
     </div>

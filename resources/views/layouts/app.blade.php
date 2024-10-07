@@ -132,22 +132,27 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('meeting-report.index') }}">รายงานการประชุม</a>
+                                </li>
                                 </li>
                             @else
                                 <li class="nav-item dropdown">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('my.calendar') }}">ตารางประชุมของฉัน</a>
-                                </li>
-
+                                    <li class="nav-item">
+                                       <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('my.calendar') }}">ตารางประชุมของฉัน</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('meeting-report.index') }}">รายงานการประชุม</a>
+                                    </li>
                                 </li>
                             @endif
                         @endguest
@@ -166,9 +171,9 @@
                             @endif
 
                             @if (Route::has('register'))
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">สมัครสมาชิก</a>
-                                </li>
+                                </li> --}}
                             @endif
                         @else
                             <li class="nav-item dropdown">

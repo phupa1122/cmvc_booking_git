@@ -9,7 +9,12 @@ class MeetingReport extends Model
 {
     use HasFactory;
 
-    
+    protected $fillable = [
+        'booking_id',
+        'user_id',
+        'report_content',
+    ];
+
     public function booking()
     {
         return $this->hasOne(Booking::class);
