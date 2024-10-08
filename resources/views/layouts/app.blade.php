@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title')</title>
-
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
 
@@ -138,21 +138,21 @@
                                 </li>
                             @else
                                 <li class="nav-item dropdown">
-                                    <li class="nav-item">
-                                       <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('my.calendar') }}">ตารางประชุมของฉัน</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('meeting-report.index') }}">รายงานการประชุม</a>
-                                    </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('bookings.create') }}">จอง</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/meeting-rooms">ห้องประชุม</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('feedback.index') }}">ข้อเสนอแนะ</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('my.calendar') }}">ตารางประชุมของฉัน</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('meeting-report.index') }}">รายงานการประชุม</a>
+                                </li>
                                 </li>
                             @endif
                         @endguest

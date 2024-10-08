@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Participant;
-use Auth;
+use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -25,13 +26,28 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+
         // ดึงข้อมูลการประชุมที่ผู้ใช้ล็อกอินเป็นผู้เข้าร่วม (status = pending)
         $pendingMeetings = Participant::where('user_id', Auth::id())
             ->where('status', 'pending')
             ->with('booking.meetingRoom') // ดึงข้อมูลห้องประชุมและการจอง
             ->get();
 
-        return view('home', compact('pendingMeetings'));
+        // สถิติการจองที่ผู้ใช้ทำในแต่ละเดือน
+        $monthlyBookings = Booking::selectRaw('MONTH(booking_start_date) as month, COUNT(*) as count')
+            ->where('user_id', $user->id)
+            ->groupBy('month')
+            ->pluck('count', 'month');
+
+        // สถิติการเข้าร่วมประชุมของผู้ใช้
+        $participationStats = Participant::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->where('user_id', $user->id)
+            ->where('status', 'approved') // นับเฉพาะการตอบรับ
+            ->groupBy('month')
+            ->pluck('count', 'month');
+
+        return view('home', compact('pendingMeetings', 'monthlyBookings', 'participationStats'));
     }
 
     // ฟังก์ชันสำหรับตอบรับการเข้าร่วมประชุม

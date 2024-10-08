@@ -8,18 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class Participant extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'booking_id',
         'user_id',
         'status',
     ];
 
-    public function booking() {
+    public function booking()
+    {
         return $this->belongsTo(Booking::class);
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

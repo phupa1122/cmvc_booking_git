@@ -15,9 +15,9 @@ class MeetingReport extends Model
         'report_content',
     ];
 
-    public function booking()
+    public function bookings()
     {
-        return $this->hasOne(Booking::class);
+        return $this->belongsTo(Booking::class);
     }
 
     public function user()

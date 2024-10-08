@@ -90,7 +90,7 @@ function formatDateThai($date)
     </table>
 
     <h4>ผู้ไม่เข้าร่วมประชุม</h4>
-    <p>จำนวน {{ $booking->participants->where('status', 'cancel')->count() }}คน</p>
+    <p>จำนวน {{ $booking->participants->where('status', 'cancel')->count() }} คน</p>
 
     <table class="table-participants">
         @php $cancelCounter = 1; @endphp <!-- เริ่มต้นลำดับผู้ไม่เข้าร่วม -->
@@ -113,7 +113,7 @@ function formatDateThai($date)
     @endfor
 
     <h4>ประธานที่ประชุม : ปิดการประชุม</h4>
-    <h4>เลิกประชุม{{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }} น.</h4>
+    <h4>เลิกประชุม {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }} น.</h4>
 
     @for ($i = 0; $i < $validated['sign_count']; $i++)
         <div class="right-text">

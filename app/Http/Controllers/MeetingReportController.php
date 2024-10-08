@@ -26,7 +26,7 @@ class MeetingReportController extends Controller
                 ->get();
         } else {
             // ส่วนของ Admin
-            $bookings = Booking::with('meetingRoom')->where('status', 'approved')->get();
+            $bookings = Booking::with('meetingRoom')->whereHas('meetingReport')->get();
         }
 
         return view('meeting-report.index', compact('bookings', 'user'));
@@ -103,21 +103,21 @@ class MeetingReportController extends Controller
 
     //public function view($id)
     //{
-        //$report = MeetingReport::where('booking_id', $id)->firstOrFail();
-        //return view('meeting-report.view', compact('report'));
+    //$report = MeetingReport::where('booking_id', $id)->firstOrFail();
+    //return view('meeting-report.view', compact('report'));
     //}
 
     public function destroy($id)
     {
         $report = MeetingReport::findOrFail($id);
 
-    // ลบไฟล์ pdf จากโฟลเดอร์ public/pdf_files
+        // ลบไฟล์ pdf จากโฟลเดอร์ public/pdf_files
         $filePath = public_path('pdf_files/' . $report->report_content);
         if (file_exists($filePath)) {
-        unlink($filePath);
+            unlink($filePath);
         }
 
-    // ลบรายงานจากฐานข้อมูล
+        // ลบรายงานจากฐานข้อมูล
         $report->delete();
 
         return redirect()->back()->with('success', 'รายงานถูกลบเรียบร้อยแล้ว');

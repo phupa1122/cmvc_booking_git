@@ -122,7 +122,8 @@
                     <table class="table table-striped table-hover" id="bookingTable">
                         <thead class="bg-light">
                             <tr class="text-center">
-                                <th>ชื่อห้องประชุม</th>
+                                <th>รหัสการจอง</th>
+                                <th>ห้อง</th>
                                 <th>วันที่</th>
                                 {{-- <th>วันที่สิ้นสุด</th> --}}
                                 <th>เวลา</th>
@@ -135,12 +136,10 @@
                         <tbody>
                             @foreach ($bookings as $booking)
                                 <tr class="clickable-row" data-id="{{ $booking->id }}">
+                                    <td class="text-center">{{ $booking->id }}</td>
                                     <td class="text-center">{{ $booking->meetingRoom->name }}</td>
-                                    <!-- แก้ไขการแสดงวันที่ -->
                                     <td class="text-center">
                                         {{ \Carbon\Carbon::parse($booking->booking_start_date)->format('d/m/Y') }}</td>
-
-                                    <!-- แก้ไขการแสดงเวลาเริ่มต้น โดยตัดวินาทีออก -->
                                     <td class="text-center">
                                         {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
                                         {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}</td>
@@ -149,7 +148,8 @@
 
                                     <td class="text-center">{{ $booking->user->name }}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-{{ $booking->status == 'approved' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">
+                                        <span
+                                            class="badge bg-{{ $booking->status == 'approved' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">
                                             {{ $booking->status == 'approved' ? 'อนุมัติแล้ว' : ($booking->status == 'pending' ? 'รอดำเนินการ' : 'ปฏิเสธ') }}
                                         </span>
                                     </td>
@@ -214,11 +214,11 @@
                                 year: 'numeric'
                             };
                             var formattedDate = bookingDate.toLocaleDateString('th-TH',
-                            options);
+                                options);
 
                             // Format time to "HH:MM" format using JavaScript
                             var startTime = response.booking.start_time.slice(0,
-                            5); // Get "HH:MM" from the time string
+                                5); // Get "HH:MM" from the time string
                             var endTime = response.booking.end_time.slice(0, 5);
 
                             // Set formatted date and time to the modal

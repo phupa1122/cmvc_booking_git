@@ -10,6 +10,7 @@
                 <table class="table table-striped" id="meetingTable">
                     <thead>
                         <tr class="text-center">
+                            <th>รหัสการจอง</th>
                             <th>ชื่อห้องประชุม</th>
                             <th>วันที่</th>
                             <th>เวลา</th>
@@ -19,8 +20,10 @@
                     <tbody>
                         @foreach ($bookings as $booking)
                             <tr>
+                                <td class="text-center">{{ $booking->id }}</td>
                                 <td class="text-center">{{ $booking->meetingRoom->name }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($booking->booking_start_date)->format('d/m/Y') }}</td>
+                                <td class="text-center">
+                                    {{ \Carbon\Carbon::parse($booking->booking_start_date)->format('d/m/Y') }}</td>
                                 <td class="text-center">{{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
                                     {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}</td>
                                 <td class="text-center">

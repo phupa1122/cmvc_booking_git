@@ -42,7 +42,7 @@
                                         @endif
                                     </td>
                                     <td>{{ $room->name }}</td>
-                                    <td>{{ Str::limit($room->des, 20) }}</td>
+                                    <td>{{ $room->des }}</td>
                                     <td>{{ $room->capacity }} ที่นั่ง</td>
                                     <td>{{ $room->location }}</td>
                                     <td>
