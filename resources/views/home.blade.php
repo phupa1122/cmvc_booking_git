@@ -12,7 +12,7 @@
                             <div class="alert alert-success" role="alert">
                                 {{ session('status') }}
                             </div>
-                        @endif 
+                        @endif
 
                         {{-- {{ __('ยินดีต้อนรับ') }}
                         {{ Auth::user()->name }} --}}
@@ -20,7 +20,7 @@
                         <!-- Personal Booking Statistics -->
                         <h4 class="mt-2">สถิติการจองของคุณ</h4>
 
-                        <div class="row">
+                        <div class="row justify-content-center">
                             <!-- Bar Chart: จำนวนการจองที่ทำในแต่ละเดือน -->
                             <div class="col-md-6">
                                 <canvas id="monthlyBookingChart"></canvas>
@@ -88,10 +88,18 @@
         const monthlyBookingChart = new Chart(monthlyBookingCtx, {
             type: 'bar',
             data: {
-                labels: [@foreach(range(1, 12) as $month) "{{ $month }}", @endforeach],
+                labels: [
+                    @foreach (range(1, 12) as $month)
+                        "{{ $month }}",
+                    @endforeach
+                ],
                 datasets: [{
                     label: 'จำนวนการจองในแต่ละเดือน',
-                    data: [@foreach(range(1, 12) as $month) {{ $monthlyBookings[$month] ?? 0 }}, @endforeach],
+                    data: [
+                        @foreach (range(1, 12) as $month)
+                            {{ $monthlyBookings[$month] ?? 0 }},
+                        @endforeach
+                    ],
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
@@ -111,10 +119,18 @@
         const participationChart = new Chart(participationCtx, {
             type: 'line',
             data: {
-                labels: [@foreach(range(1, 12) as $month) "{{ $month }}", @endforeach],
+                labels: [
+                    @foreach (range(1, 12) as $month)
+                        "{{ $month }}",
+                    @endforeach
+                ],
                 datasets: [{
                     label: 'การเข้าร่วมประชุมในแต่ละเดือน',
-                    data: [@foreach(range(1, 12) as $month) {{ $participationStats[$month] ?? 0 }}, @endforeach],
+                    data: [
+                        @foreach (range(1, 12) as $month)
+                            {{ $participationStats[$month] ?? 0 }},
+                        @endforeach
+                    ],
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1
