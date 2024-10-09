@@ -36,7 +36,7 @@ class BookingController extends Controller
         $validatedData = $request->validate([
             'meeting_room_id' => 'required|exists:meeting_rooms,id',
             'booking_start_date' => 'required|date',
-            //'booking_end_date' => 'required|date',
+            'booking_end_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'purpose' => 'required|string|max:255',

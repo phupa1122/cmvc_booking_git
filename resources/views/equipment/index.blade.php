@@ -71,16 +71,6 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
-            $('#equipmentTable').DataTable({
-                language: {
-                    url: '{{ asset('js/th.json') }}' // โหลดไฟล์ภาษาสำหรับ DataTables
-                },
-                columnDefs: [{
-                    orderable: false,
-                    targets: {{ auth()->user()->is_admin == 1 ? 2 : '' }}
-                }]
-            });
-        });
+        
     </script>
 @endpush
