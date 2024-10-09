@@ -73,7 +73,7 @@ class BookingController extends Controller
             'user_id' => Auth::id(),
             'meeting_room_id' => $request->meeting_room_id,
             'booking_start_date' => $request->booking_start_date,
-            'booking_end_date' => $request->booking_start_date,
+            'booking_end_date' => today(),
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'status' => 'pending',
