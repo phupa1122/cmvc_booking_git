@@ -171,9 +171,9 @@
                             @endif
 
                             @if (Route::has('register'))
-                                {{-- <li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">สมัครสมาชิก</a>
-                                </li> --}}
+                                </li>
                             @endif
                         @else
                             <li class="nav-item dropdown">
@@ -194,7 +194,8 @@
                                         ออกจากระบบ
                                     </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
                                         @csrf
                                     </form>
                                 </div>
