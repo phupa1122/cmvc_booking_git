@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Blog;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class BlogSeeder extends Seeder
 {
@@ -13,6 +14,11 @@ class BlogSeeder extends Seeder
      */
     public function run(): void
     {
-        Blog::factory()->count(10)->create();
+        User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('admin12345678'), // เข้ารหัสรหัสผ่าน
+            'is_admin' => 1, // ผู้ดูแลระบบ
+        ]);
     }
 }
