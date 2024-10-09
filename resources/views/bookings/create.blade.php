@@ -38,9 +38,11 @@
 
                     <div class="row mb-4">
                         <div class="col-md-3 mb-3 mb-md-0">
-                            <label for="booking_start_date" class="form-label">วันที่เริ่มต้น</label><label
-                                for="booking_end_date" class="form-label">วันที่สิ้นสุด</label>
+                            <label for="booking_start_date" class="form-label">วันที่เริ่มต้น</label>
                             <input type="date" name="booking_start_date" id="booking_start_date" class="form-control"
+                                required>
+                                <label for="booking_end_date" class="form-label">วันที่สิ้นสุด</label>
+                            <input type="date" name="booking_end_date" id="booking_end_date" class="form-control"
                                 required>
                         </div>
                         {{-- <div class="col-md-3 mb-3 mb-md-0">
